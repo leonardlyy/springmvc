@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>库存管理</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/sm.min.css">
+    <!--<link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">-->
+    <style>
+        .content-item{
+            /*height: 33%;*/
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+        .item{
+            width:25%;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align:center;
+            vertical-align:middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .item-label{
+            display:block;
+            font-size:.65rem;
+            position:relative;
+            top:.15rem;
+        }
+        .bar button{
+            border:0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+        .bar button img{
+            max-height: 100%;
+        }
+        .bar .icon img{
+            max-height: 10%;
+            max-width: 10%;
+        }
+        .content-padded .searchbar .icon img{
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+        .bar-header-secondary~.content{
+            top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-group" id="stroke-page">
+        <!--仓库管理主页面-->
+        <div class="page page-current" id="index-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel"  @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">库存管理</h1>
+            </header>
+            <div class="content">
+                <div class="content-item">
+                    <!--<a class="item" href="#fl-query-page">-->
+                        <!--<span class="item-icon"><img src="img/ruku.png"></span>-->
+                        <!--<span class="item-label">发料查询</span>-->
+                    <!--</a>-->
+                   <!-- <a class="item" href="#off-page">
+                        <span class="item-icon"><img src="img/chuku.png"></span>
+                        <span class="item-label">出库</span>
+                    </a>-->
+                    <a class="item" href="#dingdan-page" @click="startLoad()">
+                        <span class="item-icon"><img src="img/chuku.png"></span>
+                        <span class="item-label">发料管理</span>
+                    </a>
+                    <!--<a class="item" href="#kw-scan-page">-->
+                        <!--<span class="item-icon"><img src="img/chuku.png"></span>-->
+                        <!--<span class="item-label">发料库位打印记录</span>-->
+                    <!--</a>-->
+                    <!--<a class="item" href="#kw-operate-page">-->
+                        <!--<span class="item-icon"><img src="img/chuku.png"></span>-->
+                        <!--<span class="item-label">发料操作记录</span>-->
+                    <!--</a>-->
+                </div>
+            </div>
+        </div>
+
+        <!--发料查询-->
+        <div class="page" id="fl-query-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel"  @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">发料查询</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title">发料1</div>
+                                <div class="item-after">123</div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title">发料2</div>
+                                <div class="item-after">456</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!--发料管理页面-->
+        <div class="page" id="dingdan-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel"  @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">订单管理</h1>
+            </header>
+
+            <div class="bar bar-header-secondary">
+                <div class="searchbar">
+                    <a class="searchbar-cancel">取消</a>
+                    <div class="search-input">
+                        <label class="icon icon-search" for="search"></label>
+                        <input type="search" id='search_orno' placeholder='输入关键字...'  v-model="ornoCondition"/>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li class="item-content" v-for=" (o,index) in createOrnos ">
+                            <div class="item-inner">
+                                <div class="item-title">No.{{index+1}}</div>
+                                <div class="item-after"><a href="#dingdan-details-page"  @click="querySingleOrno(o.orno,o.oset)">{{o.orno}}</a></div>
+                                <div class="item-after">{{o.oset}}</a></div>
+                            </div>
+                        </li>
+                        <!--<li class="item-content">-->
+                            <!--<div class="item-inner">-->
+                                <!--<div class="item-title">订单2</div>-->
+                                <!--<div class="item-after">456</div>-->
+                            <!--</div>-->
+                        <!--</li>-->
+                    </ul>
+                    <infinite-loading :on-infinite="iniOrnos" :distance="1"  ref="infiniteLoading" v-show="t"></infinite-loading>
+                </div>
+            </div>
+        </div>
+
+        <!--发料详细页面-->
+        <div class="page" id="dingdan-details-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel"  @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">订单详细</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner " >
+                                    <div class="item-title label"><h3>订单头</h3></div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner create-actions" href="#">
+                                    <div class="item-title label">事务处理类型</div>
+                                    <div class="item-input">
+                                        <input type="text"  :value="createSingleOrno.ornoHead.ittp" disabled="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner " href="#">
+                                    <div class="item-title label">订单类型</div>
+                                    <div class="item-input">
+                                        <input type="text"  :value="createSingleOrno.ornoHead.oorg" disabled="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner " href="#">
+                                    <div class="item-title label">系列</div>
+                                    <div class="item-input">
+                                        <input type="text"  :value="createSingleOrno.ornoHead.seri" disabled="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner " href="#">
+                                    <div class="item-title label">仓单类型</div>
+                                    <div class="item-input">
+                                        <input type="text"  :value="createSingleOrno.ornoHead.otyp" disabled="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner " href="#">
+                                    <div class="item-title label">订单号</div>
+                                    <div class="item-input">
+                                        <input type="text"  :value="createSingleOrno.ornoHead.orno" disabled="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner " href="#">
+                                    <div class="item-title label">集</div>
+                                    <div class="item-input">
+                                        <input type="text"  :value="createSingleOrno.ornoHead.oset" disabled="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner " href="#">
+                                    <div class="item-title label">仓库</div>
+                                    <div class="item-input">
+                                        <input type="text"  :value="createSingleOrno.ornoHead.sfco" disabled="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner " href="#">
+                                    <div class="item-title label">库位</div>
+                                    <div class="item-input">
+                                        <input type="text"  :value="createSingleOrno.ornoHead.sflo" disabled="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner" href="#">
+                                    <div class="item-title label">工作中心</div>
+                                    <div class="item-input">
+                                        <input type="text"  :value="createSingleOrno.ornoHead.stco" disabled="true"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                    <ul >
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner " >
+                                    <div class="item-title label"><h3>订单行</h3></div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li v-for=" o in createSingleOrno.ornoLine" class="item-content">
+                            <div class="item-inner create-actions" href="#" @click="deleteItem(o.orno,o.oset,o.pono)">
+                                <!--<div class="item-after" >fdsaf </div>-->
+                                <!--<div class="item-after" >fdsaf </div>-->
+                                <div  class="item-after" >{{o.pono}}</div>
+                                <div  class=" item-after" >{{o.item}}</div>
+
+                                <!--<input  class="item-after" type="text" value="订单行" disabled="true"/>-->
+                                <!--<input  class="item-after" type="text"  :value="o.orno " disabled="true"/>-->
+                                <!--<input  class="item-after" type="text" value="物料号" disabled="true"/>-->
+                                <!--<input  class="item-after" type="text"  :value="o.item " disabled="true"/>-->
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+
+
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-100"><a href="#" class="button button-big button-fill button-danger" @click="deleteByOrno(createSingleOrno.ornoHead.orno,createSingleOrno.ornoHead.oset)">删除订单</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--库位打印记录页面-->
+        <div class="page" id="kw-scan-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel"  @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">发料库位打印记录</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title">记录1</div>
+                                <div class="item-after">123</div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title">记录2</div>
+                                <div class="item-after">456</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!--发料操作记录-->
+        <div class="page" id="kw-operate-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel"  @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">发料操作记录</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title">记录1</div>
+                                <div class="item-after">123</div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title">记录2</div>
+                                <div class="item-after">456</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!--出料列表页面-->
+        <div class="page" id="off-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel"  @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">订单出库</h1>
+            </header>
+            <nav class="bar bar-tab">
+                <a class="tab-item active" @click="loadCreateInfo()">
+                    <span class="icon icon-home"></span>
+                    <span class="tab-label">新建</span>
+                </a>
+            </nav>
+            <div class="bar bar-header-secondary">
+                <div class="searchbar">
+                    <a class="searchbar-cancel">取消</a>
+                    <div class="search-input">
+                        <label class="icon icon-search" for="search"></label>
+                        <input type="search" id='search' placeholder='输入关键字...'/>
+                    </div>
+                </div>
+            </div>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li class="item-content" @click="getOtypeByIttp()">
+                            <div class="item-inner">
+                                <div class="item-title">商品代号</div>
+                                <div class="item-after">123</div>
+                            </div>
+                        </li>
+                        <li class="item-content" onclick="jump()">
+                            <div class="item-inner">
+                                <div class="item-title">商品代号</div>
+                                <div class="item-after">456</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!--出料详细页面-->
+        <div class="page" id="off-detail-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel"  @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">发料详情</h1>
+            </header>
+            <div class="content">
+                <div class="content-block-title">订单头信息</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">事物类型</div>
+                                    <div class="item-input">
+                                        <select>
+                                            <option>发料</option>
+                                            <option>收货</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">订单类型</div>
+                                    <div class="item-input">
+                                        <select>
+                                            <option>车间管理生产订单(人工)</option>
+                                            <option>更多</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">系列</div>
+                                    <div class="item-input">
+                                        <select>
+                                            <option>WH2</option>
+                                            <option>WH3</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">仓单类型</div>
+                                    <div class="item-input">
+                                        <select>
+                                            <option>101</option>
+                                            <option>102</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">集</div>
+                                    <div class="item-input">
+                                        <select>
+                                            <option>101</option>
+                                            <option>102</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">订单号</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="选择系列之后系统自动生成">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">仓库</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="手工或扫码输入">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">库位</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="手工或扫码输入">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">工作中心</div>
+                                    <div class="item-input">
+                                        <select>
+                                            <option>中心1</option>
+                                            <option>中心2</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block-title">订单行信息</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">订单行</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="系统自动生成">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">物料</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="手工或扫码输入">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">物料说明</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="系统填写">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">数量</div>
+                                    <div class="item-input">
+                                        <input type="number" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">数量单位</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="用户可自行修改">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">批次选择</div>
+                                    <div class="item-input">
+                                        <select>
+                                            <option>任意</option>
+                                            <option>当前</option>
+                                            <option>指定</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">批次</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="用户可自行修改">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">序列号</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="用户可自行修改">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-50"><a href="#" class="button button-big button-fill button-danger">取消</a></div>
+                        <div class="col-50"><a href="#" class="button button-big button-fill button-success">提交</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--新增出料页面-->
+        <div class="page" id="create-new-page" v-cloak>
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel"  @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">新建订单</h1>
+            </header>
+            <div class="content">
+                <div class="content-block-title">订单头信息</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">订单类型</div>
+                                    <div class="item-input">
+                                        <select id="createOorg">
+                                            <option value="production.man">车间管理生产订单(人工)</option>
+                                            <option>更多</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">事物类型</div>
+                                    <div class="item-input">
+                                        <select id="createIttp">
+                                            <option value="2">发料</option>
+                                            <option value="1">收货</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">系列</div>
+                                    <div class="item-input">
+                                        <select id="createSeri">
+                                            <option value="0">===请选择系列===</option>
+                                            <option v-for="s in createSeri"  :value="s.code">{{s.dsca}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">仓单类型</div>
+                                    <div class="item-input">
+                                        <select id="createOtyp">
+                                            <option value="0">===请选择仓单类型===</option>
+                                            <option v-for="t in createOType" :value="t.code">{{t.dsca}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <!--
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">订单号</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="选择系列之后系统自动生成">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        -->
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">仓库</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="手工或扫码输入" @keyup="ckKeyup()">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">库位</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="手工或扫码输入">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">工作中心</div>
+                                    <div class="item-input">
+                                        <select id="createStco">
+                                            <option value="0">===请选择工作中心===</option>
+                                            <option v-for="t in createWorkCenter"  :value="t.code">{{t.dsca}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block-title" id="outline" v-if="createOutlineFlag == 1">订单行信息</div>
+                <!--
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">订单行</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="系统自动生成">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">物料</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="手工或扫码输入">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">物料说明</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="系统填写">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">数量</div>
+                                    <div class="item-input">
+                                        <input type="number" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">批次</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="用户可自行修改">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">序列号</div>
+                                    <div class="item-input">
+                                        <input type="text" placeholder="用户可自行修改">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                -->
+                <div class="content-block">
+                    <div class="row">
+                        <div v-if="createState == 0" class="col-100" @click="saveHeader()"><a href="#" class="button button-big button-fill button-success">保存</a></div>
+                    </div>
+                    <div class="row">
+                        <div v-if="createState == 1" class="col-100" @click="createOutline()"><a href="#" class="button button-big button-fill">新增订单行</a></div>
+                    </div>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div v-if="createState == 1" class="col-50" @click="deleteLastOutline()"><a href="#" class="button button-big button-fill button-danger">删除最近行</a></div>
+                        <div v-if="createState == 1" class="col-50"><a href="#" class="button button-big button-fill button-success">提交所有行</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>-->
+    <!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>-->
+    <script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/vue-resource.min.js"></script>
+    <script type="text/javascript" src="js/vue-infinite-loading.js"></script>
+
+    <script src="js/lodash.min.js"></script>
+    <script src="js/constant.js"></script>
+    <script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+    <!--<script type="text/javascript" src="js/vue-resource.min.js" charset="utf-8"></script>-->
+    <script>
+        $.init();
+//        $.alert(window.location.href);
+//        isLoadRUL();
+
+
+
+
+//        var httpURL = "http://192.168.1.122:8989/entering";
+//        var httpURL = "http://prodution.moonce.com/entering";
+        var httpURL = httpUrl+"entering";
+//        var httpURL ="http://localhost:8080/production/entering";
+        var user=localStorage.getItem('user');
+        var userData=JSON.parse(user);
+        var vm = new Vue({
+            el : '#stroke-page',
+            data : {
+                flag : false,
+                getOtypURL : httpURL + "/type",//获取仓单类型接口
+                getSeriURL : httpURL + "/series",//获取系列接口
+                getSfcoURL : httpURL + "/warehouse",//获取仓库,库位接口
+                getStcoURL : httpURL + "/workcenter",//获取工作中心接口
+                getItemInfoURL : httpURL + "/itemall",//获取物料信息
+                getCreateHeadInfo : httpURL + "/create",
+                getItemDscaURL : httpURL + "/itemall",
+                //订单管理页面
+                getOrnosURL: httpURL + "/headlist",
+                t:false,
+                loadflag:false,
+                page:0,
+                page:0,      //默认为0,每次查询+1,直至查询末尾
+                pageSize:20, //每次查询20条
+                companyNo:'',//公司编号
+                ornoCondition:'',//查询条件
+                createOrnos:[],
+                //订单详细页面
+                getOrnoDetails:httpURL+"/details",
+                deleteOrno:httpURL+'/delete',
+                deleteOutline:httpURL+"/deleteoutline",
+                createSingleOrno:{                   //存储根据具体的orno查询导的订单号
+                    ornoHead:{
+                        ittp:'发料',                 //事务处理类型
+                        oorg:'车间管理生产订单(人工)',//订单类型
+                        seri:'',                     //系列
+                        otyp:'',                     //仓单类型
+                        orno:"",                     //订单号
+                        oset:'',                     //集
+                        sfco:'',                     //仓库
+                        sflo:'',                     //库位
+                        stco:'',                     //工作中心
+                    },
+                    ornoLine:{    }                  //销售订单行
+                },
+                orno:'',
+                oset:'',
+                userid : '',
+                itemdsca : '',
+                createState : 0,
+                createOutlineFlag:0,
+                createTotalOutline:0,
+                createObject : {},
+                createOType : {},
+                createSeri:{},
+                createWorkCenter:{},
+            },
+            ready:function () {
+                console.log(1);
+            },
+            watch:{
+                ornoCondition:function (newOrnoCondition) {
+                    vm.queryOrnos();
+                }
+            },
+            methods : {
+                userJudge:function () {
+                    if(user==null){
+                        window.location.href="login.html";
+                    }
+                    vm.userid = userData.data.user.id;
+                    vm.companyNo=userData.data.user.companyNo;
+                },
+                loadCreateInfo: function(){
+                    $.router.load("#create-new-page");
+                    vm.getOtypeByIttp();
+                    vm.getSeri();
+                    vm.getWorkCenter();
+                },
+                getOtypeByIttp : function(){
+                    var val = $("#createIttp").val();
+                    console.log(2);
+                    if(!val){
+                        $.toast("请先选择事物类型");
+                    }else{
+                        $.get(vm.getOtypURL + "?ittp=" + val,function(response){
+                                var type = JSON.parse(response);
+                                if(type.code == 1){
+                                    vm.createOType = type.data.Type;
+//                                    console.log(vm.createOType);
+                                }else{
+
+                                }
+                        },function(response){
+
+                        });
+                    }
+                },
+                getSeri:function(){
+                    $.get(vm.getSeriURL,function(response){
+                            console.log(response);
+                            var data = JSON.parse(response);
+                            if(data.code == 1){
+                                vm.createSeri = data.data.Series;
+                            }else{
+                            }
+                        },function(response){
+                        })
+                },
+                getSfco:function(){},
+                getWorkCenter:function(){
+                    $.get(vm.getStcoURL,function(response){
+                        console.log(response);
+                        var data = JSON.parse(response);
+                        if(data.code == 1){
+                            vm.createWorkCenter = data.data.ErpWorkCenter;
+                        }else{
+
+                        }
+                    },function(response){
+
+                    })
+                },
+                saveHeader:function(){
+                    var oorg = $("#createOorg").val();
+                    var ittp = $("#createIttp").val();
+                    var otyp = $("#createOtyp").val();
+                    var seri = $("#createSeri").val();
+                    var stco = $("#createStco").val();
+                    console.log(oorg);
+                    console.log(ittp);
+                    console.log(otyp);
+                    console.log(seri);
+                    console.log(stco);
+                    if(!oorg || oorg == ""){
+                        $.toast("请选择订单类型，如果您已选择订单类型仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+                    if(!ittp){
+                        $.toast("请选择事物类型，如果您已选择事物类型仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+                    if(!seri || seri == 0){
+                        $.toast("请选择系列，如果您已选择系列仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+                    if(otyp == 0 || !otyp){
+                        $.toast("请选择仓单类型，如果您已选择仓单类型仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+                    if(!stco || stco == 0){
+                        $.toast("请选择工作中心，如果您已选择工作中心仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+
+                    vm.createState = 1;
+                    vm.createOutlineFlag = 1;
+                    var s = "?oorg=" + oorg + "&ittp=" + ittp + "&otyp=" + otyp + "&seri=" + seri +
+                            "&sfco=" +  + "CR01&sflo=CUS000227" + "&stco=" + stco;
+                    $.get(vm.getCreateHeadInfo + s,function(response){
+                            var data = JSON.parse(response);
+                            if(data.code == 1){
+                                $.toast("保存成功");
+                                vm.createState = 1;
+                                vm.createOutlineFlag = 1;
+                            }
+                        },function(response){
+                            $.toast("创建失败，请重试");
+                        })
+                },
+                createOutline:function(){
+//                    var dom = $('div#outline.content-block-title');
+                    var dom;
+                    if(vm.createTotalOutline <= 0){
+                        dom = $('#outline');
+                    }else{
+                        dom = $('#outline-' + vm.createTotalOutline);
+                    }
+                    console.log(dom);
+                    vm.createTotalOutline += 1;
+                    var t = '<div class="list-block" id="outline-' + vm.createTotalOutline + '">\
+                            <ul>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">订单行</div>\
+                                            <div class="item-input">\
+                                                <label>' + vm.createTotalOutline*10 + '</label>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">物料</div>\
+                                            <div class="item-input">\
+                                                <input id="outline-'+ vm.createTotalOutline + '-item" type="text" placeholder="手工或扫码输入">\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">物料说明</div>\
+                                            <div class="item-input">\
+                                                <input id="outline-' + vm.createTotalOutline + '-itemIntro" type="text" placeholder="系统填写">\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">数量</div>\
+                                            <div class="item-input">\
+                                                <input id="outline-' + vm.createTotalOutline + '-num" type="number" value="1">\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">批次</div>\
+                                            <div class="item-input">\
+                                                <input id="outline-' + vm.createTotalOutline + '-pici" type="text" placeholder="用户可自行修改">\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">序列号</div>\
+                                            <div class="item-input">\
+                                                <input id="outline-' + vm.createTotalOutline + '-xl" type="text" placeholder="用户可自行修改">\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                            </ul>\
+                        </div>';
+//                    console.log(dom.length);
+                    dom.after(t);
+                },
+                deleteLastOutline:function(){
+                    if(!vm.createTotalOutline){
+                        $.toast("没有可以删除的订单行");
+                    }else{
+                        $('#outline-' + vm.createTotalOutline).remove();
+                        vm.createTotalOutline -= 1;
+                    }
+                },
+                ckKeyup : function(){
+                    var e = window.event;
+                    var code = e.keyCode|| e.which || e.charCode;
+                    if(code == 13){
+                        alert("已监听回车");
+                    }
+                },
+                //查询
+                iniOrnos: function(){
+                    if(vm.loadflag){
+                        vm.t=true;
+                        vm.page++; //从第一页开始查询
+                        vm.ornoCondition=vm.ornoCondition.toUpperCase();
+                        $.get(vm.getOrnosURL+"?companyNo="+vm.companyNo+"&pageNo="+vm.page+"&pageSize="+vm.pageSize+"&orno="+vm.ornoCondition,function(response){
+                                var ornos = JSON.parse(response);
+                                if(ornos.code == 1){
+                                    if(ornos.data.results.length<vm.pageSize){//不满pageSize说明查到最后,添加完之后显示无数据
+                                        vm.createOrnos = vm.createOrnos.concat(ornos.data.results);
+                                        vm.$refs.infiniteLoading.$emit('$InfiniteLoading:complete');
+                                        //vm.t=false;
+                                    }else{
+                                        vm.createOrnos = vm.createOrnos.concat(ornos.data.results);
+                                    }
+                                }else{
+                                    //vm.t=false;
+                                    vm.$refs.infiniteLoading.$emit('$InfiniteLoading:complete');
+                                }
+                            },function(response){
+                                $.alert('查询失败!');
+                                //vm.t=false;
+                                vm.$refs.infiniteLoading.$emit('$InfiniteLoading:complete');
+                            }
+                        );
+                    }
+                    setTimeout(function () {
+//                        $.toast("修改失败，请重试！")
+                        vm.$refs.infiniteLoading.$emit('$InfiniteLoading:loaded');
+                    }.bind(vm), 1000);
+                },
+                //点击进入页面加载
+                startLoad: function () {
+                    vm.loadflag=true;
+                    vm.iniOrnos();
+                },
+                //查询时间,取得参数调用iniOrnos()方法
+                queryOrnos: _.debounce(
+                    function(){
+//                        console.log('查询'+vm.ornoCondition);
+                        vm.page=0;//重置开始查询
+                        vm.createOrnos=[];
+                        vm.$refs.infiniteLoading.$emit('$InfiniteLoading:reset');
+                    },
+                    500//用户停止输入500毫秒执行
+                ),
+                //点击具体订单号,显示订单行
+                querySingleOrno: function(orno,oset){
+                    vm.orno=orno;
+                    vm.oset=oset;
+                    //{{pro_url}}entering/details?orno=MH0000351&companyNo=101
+                    $.get(vm.getOrnoDetails,{
+                            orno : orno,
+                            companyNo :vm.companyNo,
+                            oset : oset,
+                        },
+                        function(response){
+//                            console.log(response);
+                            var orno = JSON.parse(response);
+                            if(orno.code == 1){
+//                                console.log(orno.data.Head[0].orno);
+                                vm.createSingleOrno.ornoHead.seri=orno.data.Head[0].seri;
+                                vm.createSingleOrno.ornoHead.otyp=orno.data.Head[0].otyp;
+                                vm.createSingleOrno.ornoHead.orno=orno.data.Head[0].orno;
+                                vm.createSingleOrno.ornoHead.oset=orno.data.Head[0].oset;
+                                vm.createSingleOrno.ornoHead.sfco=orno.data.Head[0].sfco;
+                                vm.createSingleOrno.ornoHead.sflo=orno.data.Head[0].sflo;
+                                vm.createSingleOrno.ornoHead.stco=orno.data.Head[0].stco;
+//                                console.log(orno.data.Line);
+                                vm.createSingleOrno.ornoLine=orno.data.Line;
+
+                            }
+
+                        },
+                        function(response){
+                        }
+                    );
+                },
+
+                //删除某条订单行
+                deleteItem: function (orno,oset,pono) {
+//                    console.log(orno);
+//                    console.log(oset);
+//                    console.log(pono);
+                    var s=showChose(orno,oset,pono);
+                },
+
+                //删除某个订单号
+                deleteByOrno: function(orno,oset){
+                    confirm(orno,oset);
+                },
+                exit:function () {
+                    localStorage.clear();
+                    window.location.href="login.html";
+                },
+            }
+        });
+        vm.userJudge();
+        //删除单条订单行
+        function showChose(orno,oset,pono) {
+            var info = [];
+            for(i=0;i<vm.createSingleOrno.ornoLine.length;i++){
+
+                if(vm.createSingleOrno.ornoLine[i].pono==pono){
+                    var lsel = ""
+                    if(vm.createSingleOrno.ornoLine[i].lsel==1){
+                        lsel="任意";
+                    }else if(vm.createSingleOrno.ornoLine[i].lsel==2){
+                        lsel="相同";
+                    }else if(vm.createSingleOrno.ornoLine[i].lsel==3){
+                        lsel="指定";
+                    }
+                    info = [
+                    {
+                        text: '订单行：'+vm.createSingleOrno.ornoLine[i].pono,
+                        label: true,
+                        color: 'warning',
+                    },
+                    {
+                        text: '物料号：'+vm.createSingleOrno.ornoLine[i].item  ,
+                        label: true
+                    },
+                    {
+                         text: '数量：'+vm.createSingleOrno.ornoLine[i].qoro+" "+ vm.createSingleOrno.ornoLine[i].orun ,
+                         label: true
+                     },
+                     {
+                         text: '批次类型：'+lsel+"  "+ vm.createSingleOrno.ornoLine[i].clot,
+                         label: true
+                    },
+                     {
+                         text: '序列号：'+ vm.createSingleOrno.ornoLine[i].serl ,
+                         label: true
+                      }
+
+
+                    ];
+                }
+            }
+
+            var buttons1 = [
+                {
+                    text: '请选择',
+                    label: true
+                },
+                {
+                    text: '删除',
+                    bold: true,
+                    color: 'dark',
+                    onClick: function() {
+                        $.showPreloader('正在删除...');
+//                        console.log(vm.deleteOutline);
+                        $.get(vm.deleteOutline,{
+                                   oorg : "production.man",
+                                   orno : orno,
+                                   oset : oset,
+                                   pono : pono,
+                                   companyNo :vm.companyNo,
+                                   userid : vm.userid
+                               },
+                            function(response){
+//                                console.log(response);
+                                var info = JSON.parse(response);
+                                if(info.code==1){
+                                    $.hidePreloader();
+                                    $.alert('删除成功!');
+                                    //刷新页面
+                                    vm.querySingleOrno();
+                                    return;
+                                }
+                                $.hidePreloader();
+                                console.log(info.code);
+                                $.alert('该订单被多表占用!无法删除!');
+                            },
+                            function(response){
+                                $.hidePreloader();
+                                $.alert('删除失败');
+                            }
+                        );
+                    }
+                },
+            ];
+            var buttons2 = [
+                {
+                    text: '取消',
+                    bg: 'danger',
+                },
+            ];
+            var groups = [info,buttons1, buttons2];
+            $.actions(groups);
+        }
+        function confirm(orno,oset) {
+            var buttons1 = [
+
+                {
+                    text: '确定删除订单:'+orno+' ?',
+                    label: true
+                },
+                {
+                    text: '删除',
+                    bold: true,
+                    color: 'dark',
+                    onClick: function() {
+//                    $.alert('删除成功!');
+                        $.showPreloader('正在删除...');
+                        ///deleteoutline?oorg=production.man&orno=MH0000353&oset=1&pono=50&companyNo=101
+                        console.log(vm.deleteOrno);
+                        $.get(vm.deleteOrno,{
+                                oorg:"production.man",
+                                orno : orno,
+                                oset : oset,
+                                companyNo : vm.companyNo,
+                                userid : vm.userid
+                            },
+                            function(response){
+                                console.log(response);
+                                var info = JSON.parse(response);;
+                                if(info.code==1){
+                                    $.hidePreloader();
+                                    $.alert('删除成功!');
+                                    //刷新页面
+                                    window.location.hash = "#dingdan-details-page";
+                                }
+                                $.hidePreloader();
+                                console.log(info.code);
+                                $.alert('该订单被多表占用!无法删除!');
+                            },
+                            function(response){
+                                $.hidePreloader();
+                                $.alert('删除失败');
+                            }
+                        );
+                    }
+                },
+            ];
+            var buttons2 = [
+                {
+                    text: '取消',
+                    bg: 'danger',
+                },
+            ];
+            var groups = [buttons1, buttons2];
+            $.actions(groups);
+        }
+        function isLoadRUL(){
+            var url=window.location.href;
+            var index=url.indexOf('#dingdan-page');
+            if(index!=-1){
+                vm.loadflag=true;
+            }else{
+                vm.loadflag=false;
+            }
+        }
+        //刷新加载
+        isLoadRUL();
+        function goBack(){
+            window.history.back();
+            //alert("哈哈");
+            //isLoadRUL();
+        }
+        function  jump() {
+            $.router.load("#off-detail-page");
+        }
+        function createNew(){
+            $.router.load("#create-new-page");
+        }
+        function innerHtml(){
+            var dom = $("#outline");
+            console.log(dom);
+        }
+    </script>
+</body>
+</html>

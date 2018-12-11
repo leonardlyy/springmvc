@@ -1,0 +1,1255 @@
+﻿<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>发料扫描</title>
+    <link rel="stylesheet" href="css/sm.min.css">
+    <link rel="stylesheet" href="css/sm-extend.min.css">
+
+    <style>
+        body {
+            overflow: auto;
+        }
+		.content{
+		top:auto}
+        .content-item {
+            height: 33%;
+            display: flex;
+            justify-content: flex-start;
+            vertical-align: middle;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+
+        #index-page .content-item {
+            /*align-items: center;*/
+            align: middle;
+            height: 100%;
+            width: 100%;
+
+        }
+
+        .item {
+            width: 25%;
+            margin-top: .5rem;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align: center;
+            vertical-align: middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+
+        .item-icon {
+            top: .05rem;
+            height: 1.2rem;
+            font-size: 1.2rem;
+            line-height: 1.2rem;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .item-icon img {
+            max-width: 50px;
+            max-height: 50px;
+        }
+        
+		.list-block .item-input{
+			font-size: .65rem
+		}
+        .item-label {
+            display: block;
+            font-size: .65rem;
+            position: relative;
+            top: .15rem;
+        }
+        .list-block ul  {
+            
+        }
+        .list-block .item-title.label  {
+            
+            font-size: .75rem
+        }
+        .list-block input[type=text] {
+            font-size: .75rem
+        }
+        .list-block select {
+            font-size: .75rem
+        }
+        .bar button {
+            border: 0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+
+        .bar button img {
+            max-height: 100%;
+        }
+
+        .bar .icon img {
+            max-height: 10%;
+            max-width: 10%;
+        }
+
+        .content-padded .searchbar .icon img {
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+	.content-block {
+	margin: 0.5rem 0;
+	 
+	}
+        .function-content {
+            height: 100%;
+            width: 100%;
+            display: flex;
+        }
+
+        .focus-sub:focus {
+            background-color: #4cd964;
+            /*color: #0a8ddf;*/
+        }
+        .list-block {  margin: 0 0;
+        }
+    </style>
+    <style>
+        /*.qr-btn{width:6rem;height: 3rem; border-radius: 15% ; text-align: center; line-height: 3rem; color: white; font-size : 1rem; background-color:blue;}*/
+
+        input[node-type=jsbridge] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-group">
+        <div class="page page-current" id="codeScan-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title" v-cloak>{{scan_len}}</h1>
+            </header>
+            <!--<form onsubmit="return CheckForm()">-->
+            <div class="content" id="content-id" @keyup="fFourKeyup($event)" style="margin-left: 2px;margin-right: 2px;text-align: left">
+                <div class="list-block">
+                    <ul style="margin-left: 2px;margin-right: 2px ">
+                        <!-- Text inputs -->
+                        <li style="height:0px">
+                            <div class="row" style="height:0px">
+                                <div class="col-60">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label barcode_label" v-cloak>{{company_len}}</div>
+                                            <div class="item-input">
+                                                <!--<input type="text"  id="euntTxt" disabled="disabled" :placeholder="input_auto_len"   >-->
+                                                <select id="euntTxt" disabled @change="changeEunt()">
+                                                    <!--<option v-if="t.companyNo==companyNo"  selected v-for="t in createEunt" :value="t.companyNo">{{t.dsca}}({{t.code}})</option>-->
+                                                    <option v-for="t in createEunt" v-if="t.code==eunt" selected :value="t.code">{{t.code}}({{t.dsca}})</option>
+                                                    <option v-for="t in createEunt" v-if="t.code!=eunt" :value="t.code">{{t.code}}({{t.dsca}})</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-40">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label" v-cloak>{{series_len}}</div>
+                                            <div class="item-input">
+                                                <input type="text" id="seri-id" v-model="seri" disabled="disabled"
+                                                    :placeholder="input_auto_len">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+
+                        <li v-show="scanOrno.length!=0">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label barcode_label" v-cloak>{{order_no_len}}</div>
+                                    <div class="item-input">
+                                        <span v-cloak>{{scanOrno.orno}}&nbsp;&nbsp;{{scanOrno.pono}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{item_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" @keyup="itemKeyup($event)" id="item-txt" :placeholder="input_enter_len">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li v-if="itemDsca!=''">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{item_dsca_len}}</div>
+                                    <div class="item-input">
+                                        <span v-cloak>{{itemDsca}}&nbsp;&nbsp;{{itemUnit}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="row">
+                                <div class="col-60">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label" v-cloak>{{cwar_len}}</div>
+                                            <div class="item-input">
+                                                <select id="createCwar" @change="changeCwar()">
+                                                    <option v-if="createCwar.length == 0" selected value="">{{no_warehouse_information_len}}</option>
+                                                    <option v-for="t in createCwar" v-if="t.code==cwar" selected :value="t.code">{{t.code}}({{t.dsca}})</option>
+                                                    <option v-for="t in createCwar" v-if="t.code!=cwar" :value="t.code">{{t.code}}({{t.dsca}})</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-40">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label" style="width:35%;" v-cloak>{{loca_len}}</div>
+                                            <div class="item-input" v-cloak>
+                                                <select id="createLoca" @change="changeLoca()">
+                                                    <option v-for="t in createLoca" :value="t.code">{{t.code}}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <div class="row">
+                            <div class="col-50">
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title label" style="width:45%;" v-cloak>{{inventory_len}}</div>
+                                        <div class="item-input">
+                                            <input type="number" disabled :value="storageNum.code">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-50">
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title label" style="width:45%;" v-cloak>{{available_len}}</div>
+                                        <div class="item-input">
+                                            <input type="number" id="use-num" disabled :value="storageNum.dsca">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{clot_len}}</div>
+                                    <div class="item-input" v-cloak>
+                                        <input type="text" @keyup="clotKeyup($event)" :placeholder="input_enter_len" id="clot-txt">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{stco_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" @keyup="stcoKeyup($event)" :placeholder="input_enter_len" id="stco-txt">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li v-if="createWorkCenter.dsca != null">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{stco_dsca_len}}</div>
+                                    <div class="item-input">
+                                        <span v-cloak>{{createWorkCenter.dsca}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{issue_num_len}}</div>
+                                    <div class="item-input">
+                                        <input type="number" id="qoro-txt" @keyup="qoroKeyup($event)" min="1" v-model="qoroMd">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{refe_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" id="refe-txt" @keyup="refeKeyup($event)" v-model="refe">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <input type="submit" class="button button-big button-fill button-light focus-sub" id="save-warehouse"
+                            :value="issue_len" @click="saveWarehouseRec()">
+                        <!--<div ><a href="#" class="button button-big button-fill button-success"  id="save-warehouse"  @click="saveWarehouseRec()">{{}}</a></div>-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!--</form>-->
+    </div>
+
+    </div>
+    <script type="text/javascript" src="js/zepto.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/sm.min.js" charset="utf-8"></script>
+    <script src="js/qrcode.lib.min.js"></script>
+    <script type="text/javascript" src="js/vue.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/vue-resource.min.js"></script>
+    <script src="js/constant.js"></script>
+    <script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+    <script>
+        $.init();
+        var user = localStorage.getItem('user');
+        var userData = JSON.parse(user);
+        //var httpURL = "http://prodution.moonce.com/entering";
+        var httpURL1 = httpUrl + "entering";
+        //       var httpURL ="http://localhost:8080/production/entering";
+        var vm = new Vue({
+            el: "#codeScan-page",
+            data: {
+                companyNo: "",
+                userid: "",
+                warehouseNo: "",
+                warehouseNo1: "",
+                qoroMd: "",
+                item_len: "物料",
+                pono_len: "行",
+                order_no_len: "订单号",
+                issue_len: "发料",
+                scan_len: "发料扫描",
+                input_enter_len: "输入完成后，回车",
+                workshop_len: "车间管理生产订单(人工)",
+                company_len: "公司",
+                series_len: "系列",
+                item_dsca_len: "物料说明",
+                unit_len: "单位",
+                cwar_len: "仓库",
+                loca_len: "库位",
+                clot_len: "批次",
+                stco_dsca_len: "工作中心说明",
+                inventory_len: "库存数量",
+                available_len: "可用数量",
+                stco_len: "工作中心",
+                refe_len: "备注",
+                issue_num_len: "发货数量",
+                no_warehouse_information_len: '选择仓库',
+                system_error_len: '系统错误!',
+                not_batch: '批次不匹配！',
+                not_stco_len: '工作中心不匹配！',
+                get_item_len: '获取物料资料出错！',
+                in_seri_error_len: '系列输入错误！',
+                not_company_len: '公司不正确！',
+                qoro_more_then_len: '超过可用数量！',
+                saving_len: '正在保存',
+                saving_local_len: '正在保存到本地',
+                save_success_len: '保存成功',
+                save_error_len: '保存失败',
+                default_warehouse_len: '你的默认仓库为：',
+                input_auto_len: '自动生成',
+                getOtypURL: httpURL1 + "/type",//获取仓单类型接口
+                getSeriURL: httpURL1 + "/series",//获取系列接口
+                getSfcoURL: httpURL1 + "/warehouse",//获取仓库,库位接口
+                getStcoURL: httpURL1 + "/workcenter",//获取工作中心接口
+                getItemInfoURL: httpURL1 + "/itemall",//获取物料信息
+                getBatchURL: httpURL1 + "/batch",
+                getEuntURL: httpURL1 + "/eunt",
+                getCreateHeadInfo: httpURL1 + "/create",
+                getCreateoutlineInfo: httpURL1 + "/createoutline",
+                getWarehouseURL: httpURL1 + "/warehouse",
+                getKuweiURL: httpURL1 + "/storagelocation",
+                getStorageNumURL: httpURL1 + "/num",
+                getScanOrnoURL: httpURL1 + "/scan-orno",
+                getSaveWarehouseRecURL: httpURL1 + "/create-warehouse",
+                getApproveLineURL: httpURL1 + "/approve-line",
+                getFindMaxLineURL: httpURL1 + "/find-max-line",
+                scanOrno: [],
+                itemDsca: "",
+                itemLtct: 1,
+                itemUnit: "",
+                eunt: "",
+                serialNumber: "",
+                createState: 0,
+                createOutlineFlag: 0,
+                createTotalOutline: 0,
+                storageNum: { 'code': '0.0', 'dsca': '0.0' },
+                createWorkCenter: "",
+                refe: '',
+                //            createOType : {},
+                otyp: '',
+                seriD: '',
+                seriN: '',
+                seri: '',
+                cwar: '',
+                loca: '',
+                createSeri: [],
+                picilist: [],
+                createCwar: [],
+                createLoca: [],
+                createEunt: [],
+                asynflag: "",
+                stco: ''
+            },
+            watch: {
+                stco: function (curVal, oldVal) {
+                    vm.createWorkCenter.dsca = "";
+                },
+                eunt: function (curVal, oldVal) {
+                    console.log(curVal + "" + oldVal)
+                    if (curVal != oldVal) {
+                        if (curVal.substring(0, 1) == 'D') {
+                            vm.seri = vm.seriD;
+                        }
+                        if (curVal.substring(0, 1) == 'N') {
+                            vm.seri = vm.seriN;
+                        }
+
+
+                    }
+                }
+            },
+            methods: {
+                //初始化加载
+                loadSelectItem: function () {
+                    $("#item-txt")[0].focus();
+                    // if(user==null){
+                    //     window.location.href="login.html";
+                    // }
+                    if (userData.data.user.len == 'E') {
+                        vm.item_len = "Item";
+                        vm.order_no_len = "Order No.";
+                        vm.workshop_len = "Workshop management production order (artificial)";
+                        vm.issue_len = 'Issue';
+                        vm.scan_len = 'Issue Scan';
+                        vm.company_len = 'Co.';
+                        vm.series_len = 'Series';
+                        vm.item_dsca_len = 'Item Dsca';
+                        vm.unit_len = 'Unit';
+                        vm.cwar_len = 'Cwar';
+                        vm.loca_len = 'Loca';
+                        vm.clot_len = 'Batch';
+                        vm.stco_dsca_len = 'Work center Dsca';
+                        vm.pono_len = 'pono';
+                        vm.inventory_len = 'Inventory';
+                        vm.available_len = 'Available';
+                        vm.stco_len = 'Work center';
+                        vm.issue_num_len = 'Issue Num';
+                        vm.refe_len = 'Remark';
+                        vm.system_error_len = 'System error!';
+                        vm.not_batch = 'The batch does not match!';
+                        vm.not_stco_len = 'Work center does not match!';
+                        vm.get_item_len = 'Get item error!';
+                        vm.qoro_more_then_len = 'More than available quantity!';
+                        vm.in_seri_error_len = 'Series of input errors!';
+                        vm.not_company_len = 'The company is not right!';
+                        vm.saving_len = 'Saving';
+                        vm.saving_local_len = 'Saving to local';
+                        vm.save_success_len = 'Save success';
+                        vm.save_error_len = 'Save errors';
+                        vm.input_enter_len = "After input enter";
+                        vm.default_warehouse_len = 'Your default warehouse is :';
+                        vm.no_warehouse_information_len = 'There is no warehouse information for the time being.';
+                        vm.input_auto_len = 'Automatic generation';
+                    }
+                    vm.companyNo = userData.data.user.companyNo;
+                    vm.userid = userData.data.user.id;
+                    vm.warehouseNo = userData.data.user.warehouseNo;
+                    vm.warehouseNo1 = userData.data.user.warehouseNo1;
+                    vm.otyp = userData.data.user.otyp;
+                    vm.seriD = userData.data.user.seri;
+                    vm.seriN = userData.data.user.seriN;
+
+
+                    //加载系列下拉选项
+                    vm.getSeries();
+                    //                vm.getType();
+                    //                vm.getWorkCenter();
+                    vm.getEunt();
+                    vm.itemDsca = '';
+                    vm.itemLtct = 1;
+                    vm.updatePageData();
+
+
+                    var winHeight = $(window).height(); //获取当前页面高度
+                    $(window).resize(function () {
+                        var thisHeight = $(this).height();
+                        if (winHeight - thisHeight > 50) {
+                            //当软键盘弹出，在这里面操作
+                            //alert('aaa');
+                            $('body').css('height', winHeight + 'px');
+                        } else {
+                            //alert('bbb');
+                            //当软键盘收起，在此处操作
+                            $('body').css('height', '100%');
+                        }
+                    });
+                },
+                //获取系列
+                getSeries: function () {
+                    //加载系列下拉选项
+                    $.get(vm.getSeriURL, {
+                        companyNo: vm.companyNo
+                    }, function (response) {
+                        var series = JSON.parse(response);
+                        if (series.code == 1) {
+                            vm.createSeri = series.data.Series;
+
+                        }
+                    });
+                },
+                //获取仓单类型 已默认
+                getType: function () {
+                    $.get(vm.getOtypURL, {
+                        ittp: 2,
+                        companyNo: vm.companyNo,
+                    }, function (response) {
+                        var type = JSON.parse(response);
+                        if (type.code == 1) {
+                            vm.createOType = type.data.Type;
+                        }
+                    });
+                },
+                getWarehouse: function (page) {
+                    $.get(vm.getWarehouseURL, {
+                        companyNo: vm.companyNo,
+                        item: $("#item-txt").val(),
+                        eunt: vm.eunt
+                    }, function (response) {
+                        var data = JSON.parse(response);
+                        console.log(data);
+                        console.log(vm.warehouseNo1);
+                        //                            console.log(data.code);
+                        if (data.code == 1) {
+
+                            vm.createCwar = data.data.Warehouse;
+                            for (i = 0; i < vm.createCwar.length; i++) {
+                                if (vm.warehouseNo == vm.createCwar[i].code) {
+                                    vm.cwar = vm.warehouseNo;
+                                    vm.eunt = vm.createCwar[i].grid
+                                }
+                                if (vm.warehouseNo1 == vm.createCwar[i].code) {
+                                    vm.cwar = vm.warehouseNo1;
+                                    vm.eunt = vm.createCwar[i].grid
+                                }
+                                console.log("仓库" + vm.cwar)
+                            }
+                            if (!(vm.cwar == vm.warehouseNo || vm.cwar == vm.warehouseNo1)) {
+                                vm.cwar = vm.createCwar[0].code
+                                vm.eunt = vm.createCwar[0].grid
+                            }
+                            vm.getEunt();
+                            vm.getKuwei();
+                            vm.getScanOrno();
+                        } else {
+
+                            $.toast(vm.no_warehouse_information_len);
+                        }
+                    })
+                },
+                getEunt: function () {
+
+                    vm.getSeries();
+                    $.get(vm.getEuntURL, {
+                        companyNo: vm.companyNo,
+                    }, function (response) {
+                        var eunt = JSON.parse(response);
+                        if (eunt.code == 1) {
+                            vm.createEunt = eunt.data.eunt;
+                            // var falg = false;
+                            // for(var i=0;i<vm.createEunt.length;i++){
+                            //     if(vm.createEunt==vm.eunt){
+                            //         $("#euntTxt").val(vm.createEunt);
+                            //         falg=true;
+                            //     }
+                            // }
+                            // if(!falg){
+                            //     $("#euntTxt").val("");
+                            // }
+                        }
+                    });
+                },
+                changeCwar: function () {
+                    vm.cwar = $("#createCwar").val();
+                    for (var i = 0; i < vm.createCwar.length; i++) {
+                        if (vm.cwar == vm.createCwar[i].code) {
+                            vm.eunt = vm.createCwar[i].grid;
+                            break;
+                        }
+                    }
+                    $("#clot-txt").val("");
+                    vm.getKuwei();
+                    // vm.getPici();
+                },
+                changeLoca: function () {
+                    vm.loca = $("#createLoca").val();
+                    vm.getPici();
+                },
+                getKuwei: function () {
+                    if ($("#clot-txt").val() == "" && vm.itemLtct != 1) {
+                        $("#clot-txt").val(" ")
+                    }
+                    $.get(vm.getKuweiURL, {
+                        cwar: vm.cwar,
+                        item: $("#item-txt").val(),
+                        clot: $("#clot-txt").val(),
+                        // isClotNull:1,
+                        companyNo: vm.companyNo
+                    }, function (response) {
+                        var data = JSON.parse(response);
+                        if (data.code == 1) {
+                            vm.createLoca = data.data;
+                            if (data.data.length > 0) {
+                                vm.loca = data.data[0].code;
+                            } else {
+                                vm.loca = "";
+                            }
+
+                            vm.getPici();
+                        } else {
+                            $.toast(vm.system_error_len);
+                        }
+                    });
+                },
+                getPiKuwei: function () {
+
+                    $.get(vm.getKuweiURL, {
+                        cwar: vm.cwar,
+                        item: $("#item-txt").val(),
+                        clot: $("#clot-txt").val(),
+                        isClotNull: 1,
+                        companyNo: vm.companyNo
+                    }, function (response) {
+                        var data = JSON.parse(response);
+                        vm.chooseKuweiFlag = 1;
+                        if (data.code == 1) {
+                            vm.createLoca = data.data;
+                            if (data.data.length > 0) {
+                                vm.loca = data.data[0].code;
+                            } else {
+                                vm.loca = "";
+                            }
+                            vm.getStorageNum();
+                        } else {
+                            $.toast(vm.system_error_len);
+                        }
+                    });
+                },
+                getPici　: function () {
+                    if ($("#item-txt").val() != "") {
+                        $.get(vm.getBatchURL, {
+                            cwar: vm.cwar,
+                            loca: vm.loca,
+                            item: $("#item-txt").val(),
+                            companyNo: vm.companyNo,
+                        }, function (response) {
+                            var batchs = JSON.parse(response);
+                            var bc = null;
+                            if (batchs.code == 1) {
+                                vm.picilist = batchs.data.Batch;
+                                if (batchs.data.Batch.length > 0) {
+                                    $("#clot-txt").val(batchs.data.Batch[0].code);
+                                    //console.log($("#createLoca").val())
+                                    $("#stco-txt")[0].focus();
+                                } else {
+                                    $("#clot-txt").val("");
+                                    $("#clot-txt")[0].focus();
+                                }
+                                vm.getPiciScan();
+                                vm.getStorageNum();
+                            }
+                        });
+                    } else {
+                        $("#clot-txt").val("");
+                    }
+                },
+                getPiciScan　: function () {
+                    if ($("#clot-txt").val() == "" && vm.itemLtct != 1) {
+                        $("#clot-txt").val(" ")
+                        $("#stco-txt")[0].focus();
+
+                    } else if ($("#clot-txt").val() == "" && vm.itemLtct == 1) {
+                        $.toast(vm.not_batch);
+                        $("#clot-txt").val("")
+                        $("#clot-txt")[0].focus();
+                    } else {
+                        $.get(vm.getBatchURL, {
+                            cwar: vm.cwar,
+                            item: $("#item-txt").val(),
+                            companyNo: vm.companyNo,
+                        }, function (response) {
+                            var batchs = JSON.parse(response);
+                            var bc = null;
+                            if (batchs.code == 1) {
+                                for (i = 0; i < batchs.data.Batch.length; i++) {
+                                    if (batchs.data.Batch[i].code == $("#clot-txt").val()) {
+                                        bc = batchs.data.Batch[i].code;
+                                        $("#stco-txt")[0].focus();
+                                    }
+                                }
+                                vm.getPiKuwei();
+                                if (bc == null) {
+                                    $.toast(vm.not_batch);
+                                    $("#clot-txt").val("");
+                                    $("#clot-txt")[0].focus();
+                                }
+                                vm.picilist = batchs.data.Batch;
+                            }
+                        });
+                    }
+                },
+                getStorageNum: function () {
+                    var clotT = $("#clot-txt").val();
+                    if (clotT == "") {
+                        clotT = " ";
+                    }
+                    $.get(vm.getStorageNumURL, {
+                        cwar: vm.cwar,
+                        loca: vm.loca,
+                        item: $("#item-txt").val(),
+                        clot: clotT,
+                        companyNo: vm.companyNo,
+                    }, function (response) {
+                        var da = JSON.parse(response);
+                        if (da.code == 1) {
+                            if (da.data.length == 0) {
+                                vm.storageNum = { 'code': '0.0', 'dsca': '0.0' };
+                            } else {
+                                vm.storageNum = da.data;
+                            }
+                        }
+                    });
+                },
+                getScanOrno: function () {
+                    // $.get(vm.getScanOrnoURL,{
+                    //     sfco : vm.cwar,
+                    //     stco : $("#stco-txt").val(),
+                    //     seri : vm.seri,
+                    //     companyNo : vm.companyNo,
+                    // },function(response){
+                    //     console.log(response)
+                    //     var da = JSON.parse(response);
+                    //     if(da.code == 1){
+                    //         if(da.data.length==0){
+                    //             // vm.scanOrno=[];
+                    //         }else{
+                    //             vm.scanOrno.num = "";
+                    //             // vm.scanOrno=da.data;
+                    //         }
+                    //
+                    //     }
+                    // });
+                },
+                getWorkCenter: function () {
+                    $.get(vm.getStcoURL, {
+                        companyNo: vm.companyNo,
+                        eunt: vm.eunt
+                    }, function (response) {
+                        var centers = JSON.parse(response);
+                        vm.createWorkCenter = "";
+                        if (centers.code == 1) {
+                            $(".bar-nav~.content").attr("style", "top:-50px");
+                            for (i = 0; i < centers.data.ErpWorkCenter.length; i++) {
+                                if (centers.data.ErpWorkCenter[i].code == $("#stco-txt").val()) {
+                                    vm.createWorkCenter = centers.data.ErpWorkCenter[i];
+                                    $("#content-id").attr("top", "-50px");
+                                    $("#qoro-txt").val("")
+                                    $("#qoro-txt")[0].focus();
+                                }
+                            }
+                            if (vm.createWorkCenter == "") {
+                                $.toast(vm.not_stco_len);
+
+                                $("#stco-txt").val("");
+                                $("#stco-txt")[0].focus();
+                            } else {
+                                vm.getScanOrno();
+                            }
+                        } else {
+
+                            $.toast(vm.not_stco_len);
+                            $("#content-id").attr("top", "-50px");
+                            $("#stco-txt").val("");
+                            $("#stco-txt")[0].focus();
+                        }
+                    });
+                },
+                itemKeyup: function (event) {
+                    if (event.keyCode == 13 || event.keyCode == 9) {
+                        $("#clot-txt").val("");
+                        $("#item-txt").val("         " + $("#item-txt").val().trim().toUpperCase());
+                        $.get(vm.getItemInfoURL, {
+                            item: $("#item-txt").val(),
+                            companyNo: vm.companyNo,
+                        }, function (response) {
+                            var data = JSON.parse(response);
+                            console.log(response)
+                            if (data.code == 1 && data.data.Item.length > 0) {
+                                vm.itemDsca = data.data.Item[0].dsca;
+                                vm.itemLtct = data.data.Item[0].grid;
+                                vm.itemUnit = data.data.Unit.code;
+                                if (data.data.SerialNumber.length > 0) {
+                                    vm.serialNumber = data.data.SerialNumber[0].code
+                                }
+                                vm.getWarehouse();
+                            } else {
+                                $.toast(vm.get_item_len);
+                                $("#item-txt").val("");
+                                $("#item-txt")[0].focus();
+                            }
+                        });
+                    }
+                },
+                stcoKeyup: function (event) {
+                    if (event.keyCode == 13 || event.keyCode == 9) {
+                        $("#stco-txt").val($("#stco-txt").val().trim().toUpperCase());
+                        vm.getWorkCenter();
+                    }
+                },
+                qoroKeyup: function (event) {
+                    if (event.keyCode == 13 || event.keyCode == 9) {
+                        $("#refe-txt")[0].focus();
+                    }
+                },
+                warehouseKeyup: function (event) {
+                    if (event.keyCode == 13 || event.keyCode == 9) {
+                        $("#item-id")[0].focus();
+                        vm.saveWarehouseRec();
+                    }
+                },
+                refeKeyup: function (event) {
+                    if (event.keyCode == 13 || event.keyCode == 9) {
+                        $("#save-warehouse").focus();
+                    }
+                },
+                fFourKeyup: function (event) {
+                    //                if(event.keyCode==115){
+                    //                    console.log("keyCode="+event.keyCode);
+                    //                    return $("#createCwar").click();
+                    //                }
+                },
+                clotKeyup: function (event) {
+                    if (event.keyCode == 13 || event.keyCode == 9) {
+                        $("#clot-txt").val($("#clot-txt").val());
+                        vm.getPiciScan();
+                    }
+                },
+                updatePageData: function () {
+                    vm.getStorageNum();
+                    vm.getScanOrno();
+                },
+                saveWarehouseRec: function () {
+
+                    $("#content-id").focus();
+                    var ser_falg = false;
+                    for (var i = 0; i < vm.createSeri.length; i++) {
+                        $("#new-seri").val()
+                        if (vm.createSeri[i].code == vm.seriN.toUpperCase() || vm.createSeri[i].code == vm.seriD.toUpperCase()) {
+                            ser_falg = true;
+                            break;
+                        }
+                    }
+                    if (!ser_falg) { return $.toast(vm.in_seri_error_len); }
+                    //                if(vm.qoroMd==''||!0<parseInt($("#qoro-txt").val().trim())){
+                    //                    return $.toast("发货数量不规范！");
+                    //                }
+                    //                判断企业单元与系列
+                    //                 if(vm.seri.substring(0,1)!= vm.eunt.substring(0,1)){
+                    //                     $.toast(vm.not_company_len);
+                    //                     return;
+                    //                 }
+                    //                判断企业单元与工作中心
+                    if (vm.createWorkCenter == "") {
+                        $.toast(vm.not_stco_len);
+                        return;
+                    }
+                    if (vm.cwar == vm.warehouseNo || vm.cwar == vm.warehouseNo1) {
+                        if (vm.cwar == vm.warehouseNo) {
+                            vm.seri = vm.seriD.toUpperCase();
+                        }
+                        if (vm.cwar == vm.warehouseNo1) {
+                            vm.seri = vm.seriN.toUpperCase();
+                        }
+                        var oorg = "production.man";
+                        var ittp = "issue";
+                        //                var otyp = $("#createOType").val();
+                        var otyp = vm.otyp;
+                        var seri = vm.seri;
+                        var stco = $("#stco-txt").val();
+                        var sfco = vm.cwar;
+                        var refe = vm.refe;
+                        var sflo = $("#createLoca").val();
+                        var item = $("#item-txt").val();
+                        var qoro = $("#qoro-txt").val().trim();
+                        var uNum = $("#use-num").val().trim();
+                        if (parseInt(qoro) > parseInt(uNum)) {
+                            $.toast(vm.qoro_more_then_len);
+                        } else {
+
+
+                            var orun = vm.itemUnit;
+                            var clot = $("#clot-txt").val();
+                            var lsel = "any";
+                            if (clot != "") {
+                                lsel = "specific";
+                            }
+                            var serl = vm.serialNumber;
+                            console.log(item, qoro, orun, lsel, clot, serl);
+                            $.showPreloader(vm.saving_len + '...');
+                            if (localStorage.getItem("asyn") != null) {
+                                $.showPreloader(vm.saving_local_len + '...');
+                                var line = {
+                                    "asynid": vm.asynflag, "oorg": oorg,
+                                    "ittp": ittp,
+                                    "otyp": otyp,
+                                    "seri": seri,
+                                    "stco": stco.toUpperCase(),
+                                    "sfco": sfco,
+                                    "sflo": sflo,
+                                    "item": item.toUpperCase(),
+                                    "qoro": qoro,
+                                    "orun": orun,
+                                    "clot": clot,
+                                    "lsel": lsel,
+                                    "serl": serl,
+                                    "refe": refe,
+                                    "companyNo": vm.companyNo,
+                                    "userid": vm.userid
+                                };
+                                var lines = new Array;
+                                if (localStorage.getItem("head-line") != null) {
+                                    lines = JSON.parse(localStorage.getItem("head-line"))
+                                }
+                                lines.push(line);
+                                localStorage.setItem("head-line", JSON.stringify(lines))
+
+                                vm.createState = 1;
+                                $.toast(vm.save_success_len);
+                                vm.clearAll();
+                                $.hidePreloader()
+                            } else {
+                                $.get(vm.getSaveWarehouseRecURL, {
+                                    oorg: oorg,
+                                    ittp: ittp,
+                                    otyp: otyp,
+                                    seri: seri,
+                                    stco: stco.toUpperCase(),
+                                    sfco: sfco,
+                                    sflo: sflo,
+                                    item: item.toUpperCase(),
+                                    qoro: qoro,
+                                    orun: orun,
+                                    clot: clot,
+                                    lsel: lsel,
+                                    serl: serl,
+                                    refe: refe,
+                                    companyNo: vm.companyNo,
+                                    userid: vm.userid
+                                }, function (response) {
+                                    var data = JSON.parse(response);
+                                    if (data.code == 1) {
+                                        $.toast(vm.save_success_len);
+                                        vm.getScanOrno();
+                                        //vm.getStorageNum();
+                                        vm.clearAll();
+                                        vm.scanOrno = data.data;
+                                    } else if (data.code == 2) {
+                                        vm.scanOrno = data.data;
+                                        // vm.getScanOrno();
+                                        //vm.getStorageNum();
+                                        // vm.clearAll();
+                                        if (data.message == null || data.message == '') {
+                                            $.toast("订单创建失败！请重试！");
+                                        } else {
+                                            $.toast(data.message);
+                                        }
+                                        $("#save-warehouse").focus();
+                                    } else {
+                                        $.toast(vm.save_error_len);
+                                        $("#save-warehouse").focus();
+                                    }
+                                    $.hidePreloader();
+                                }, function (msg) {
+                                    $.toast(msg);
+                                    $.hidePreloader();
+                                    // $.get(vm.getApproveLineURL,{
+                                    //     orno:vm.scanOrno.orno,
+                                    //     oset:vm.scanOrno.oset,
+                                    //     companyNo : vm.companyNo,
+                                    // },function(response){
+                                    //     console.log(response);
+                                    // },function (msg) {
+                                    //     console.log(msg);
+                                    // });
+                                });
+
+                            }
+                        }
+                    } else {
+                        $.toast(vm.default_warehouse_len + vm.warehouseNo + "," + vm.warehouseNo1)
+                    }
+                },
+                clearAll: function () {
+                    console.log("清空数据")
+                    vm.createWorkCenter = "";
+                    $("#ck-kw-text").val("");
+                    $("#kw-text").val("");
+                    //                $("#orno-text").val("")
+                    //                vm.orno="";
+                    //                vm.oset ="";
+                    vm.createTotalOutline = 0;
+                    vm.createState = 0;
+                    vm.createWorkCenter = "";
+                    vm.createCwar = "";
+                    vm.createLoca = "";
+                    vm.refe = "";
+                    $("#stco-txt").val("");
+                    $("#clot-txt").val("");
+                    $("#item-txt").val("");
+                    vm.itemDsca = '';
+                    vm.itemUnit = '';
+                    vm.qoroMd = '';
+                    $("#use-num").val("");
+                    vm.storageNum = { 'code': '0.0', 'dsca': '0.0' }
+                    $("#item-txt")[0].focus();
+                    $(".bar-nav~.content").attr("style", "top:0px");
+                },
+                exit: function () {
+                    localStorage.clear();
+                    window.location.href = "login.html";
+                },
+            }
+        })
+        vm.loadSelectItem();
+        function goBack() {
+            window.location.href = "index.html";
+        }
+        function wlKeyup() {
+            var e = window.event;
+            var code = e.keyCode || e.which || e.charCode;
+            if (code == 13) {
+
+            }
+        }
+
+    </script>
+    <!--<script>-->
+    <!--$(function(){-->
+    <!--FlKwQrcode.init($('[node-type=scan-kw-btn]'));-->
+    <!--});-->
+    <!--(function($) {-->
+    <!--//            发料库位-->
+    <!--var FlKwQrcode = function(tempBtn) {-->
+    <!--var _this_ = this;-->
+    <!--var isWeiboWebView = /__weibo__/.test(navigator.userAgent);-->
+    <!--if (isWeiboWebView) {-->
+    <!--if (window.WeiboJSBridge) {-->
+    <!--_this_.bridgeReady(tempBtn);-->
+    <!--} else {-->
+    <!--document.addEventListener('WeiboJSBridgeReady', function() {-->
+    <!--_this_.bridgeReady(tempBtn);-->
+    <!--});-->
+    <!--}-->
+    <!--} else {-->
+    <!--_this_.nativeReady(tempBtn);-->
+    <!--}-->
+    <!--};-->
+    <!--FlKwQrcode.prototype = {-->
+    <!--nativeReady: function(tempBtn) {-->
+    <!--$('[node-type=jsbridge]',tempBtn).on('click',function(e){-->
+    <!--e.stopPropagation();-->
+    <!--});-->
+    <!--$(tempBtn).bind('click',function(e){-->
+    <!--$(this).find('input[node-type=jsbridge]').trigger('click');-->
+    <!--});-->
+    <!--$(tempBtn).bind('change', this.getImgFile);-->
+
+    <!--},-->
+    <!--bridgeReady: function(tempBtn) {-->
+    <!--$(tempBtn).bind('click', this.weiBoBridge);-->
+    <!--},-->
+    <!--weiBoBridge: function() {-->
+    <!--window.WeiboJSBridge.invoke('scanQRCode', null, function(params) {-->
+    <!--//weibo-->
+    <!--//得到扫码的结果-->
+    <!--var codeKW = data;-->
+    <!--if (codeKW.indexOf("loca:") >= 0) {-->
+    <!--$("#ck-kw-text").val(codeKW.substring(codeKW.indexOf("cwar:") + 5, codeKW.indexOf("loca:")));-->
+    <!--$("#kw-text").val(codeKW.substring(codeKW.indexOf("loca:") + 5));-->
+    <!--}else if(codeKW.indexOf("item:") >= 0){-->
+    <!--var item =codeKW.substring(codeKW.indexOf("item:") + 5);-->
+    <!--$("#outline-"+ vm.createTotalOutline + "-item").val(item);-->
+    <!--$.get(vm.getItemInfoURL,{-->
+    <!--item : item,-->
+    <!--companyNo : vm.companyNo,-->
+    <!--},function (res) {-->
+    <!--console.log(res)-->
+    <!--var data = eval("("+res.body+")");-->
+    <!--if(data.code==1 && data.data.Item.length>0){-->
+    <!--vm.itemDsca=data.data.Item[0].dsca;-->
+    <!--vm.itemUnit=data.data.Unit.code;-->
+
+    <!--}else{-->
+
+    <!--$.toast("获取物料资料出错！")-->
+    <!--}-->
+    <!--vm.getPici();-->
+    <!--})-->
+    <!--}else if(codeKW.indexOf("stco:") >= 0){-->
+    <!--var stco = codeKW.substring(codeKW.indexOf("stco:") + 5);-->
+    <!--$("#stco-txt").val(stco);-->
+    <!--vm.getWorkCenter();-->
+    <!--}else{-->
+    <!--$.hidePreloader();-->
+    <!--$.toast("条码未识别，请重试！");-->
+    <!--}-->
+    <!--});-->
+    <!--},-->
+    <!--getImgFile: function() {-->
+
+    <!--$.showPreloader('正在解析...');-->
+    <!--var _this_ = this;-->
+    <!--var inputDom = $(this).find('input[node-type=jsbridge]');-->
+    <!--var imgFile = inputDom[0].files;-->
+    <!--var oFile = imgFile[0];-->
+    <!--var oFReader = new FileReader();-->
+    <!--var rFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;-->
+
+    <!--if (imgFile.length === 0) {-->
+    <!--return;-->
+    <!--}-->
+
+    <!--if (!rFilter.test(oFile.type)) {-->
+    <!--$.hidePreloader();-->
+    <!--$.toast("选择正确的图片格式！");-->
+    <!--return;-->
+    <!--}-->
+
+    <!--oFReader.onload = function(oFREvent) {-->
+    <!--qrcode.decode(oFREvent.target.result);-->
+    <!--qrcode.callback = function(data) {-->
+    <!--$.hidePreloader();-->
+    <!--$.toast("条码内容为:"+data);-->
+    <!--}-->
+    <!--//得到扫码的结果-->
+    <!--//                        console.log(data)-->
+    <!--//                        var codeKW = data;-->
+    <!--//                        if (codeKW.indexOf("loca:") >= 0) {-->
+    <!--//                            $.hidePreloader();-->
+    <!--//                            $("#ck-kw-text").val(codeKW.substring(codeKW.indexOf("cwar:") + 5, codeKW.indexOf("loca:")));-->
+    <!--//                            $("#kw-text").val(codeKW.substring(codeKW.indexOf("loca:") + 5));-->
+    <!--//                        }else if(codeKW.indexOf("item:") >= 0){-->
+    <!--//                            var item =codeKW.substring(codeKW.indexOf("item:") + 5);-->
+    <!--//                            $("#item-txt").val(item);-->
+    <!--//                            vm.$http.get(vm.getItemInfoURL,{-->
+    <!--//                                params :{-->
+    <!--//                                    item : item,-->
+    <!--//                                    companyNo : vm.companyNo,-->
+    <!--//                                }-->
+    <!--//                            }).then(function (res) {-->
+    <!--//                                $.hidePreloader();-->
+    <!--//                                console.log(res)-->
+    <!--//                                var data = eval("("+res.body+")");-->
+    <!--//                                if(data.code==1&& data.data.Item.length>0){-->
+    <!--//                                    vm.itemDsca=data.data.Item[0].dsca;-->
+    <!--//                                    vm.itemUnit=data.data.Unit.code;-->
+    <!--//                                }else{-->
+    <!--//-->
+    <!--//                                    $.toast("获取物料资料出错！")-->
+    <!--//                                }-->
+    <!--//                                vm.getPici();-->
+    <!--//                            },function (res) {-->
+    <!--//                                $.hidePreloader();-->
+    <!--//                                $.toast("获取物料资料出错！")-->
+    <!--//                            })-->
+    <!--//                        }else if(codeKW.indexOf("stco:") >= 0){-->
+    <!--//                            var stco = codeKW.substring(codeKW.indexOf("stco:") + 5);-->
+    <!--//                            $("#stco-txt").val(stco);-->
+    <!--//                            $.hidePreloader();-->
+    <!--//                            vm.getWorkCenter();-->
+    <!--//-->
+    <!--//                        }else if(codeKW.indexOf("clot:") >= 0){-->
+    <!--//                            var clot = codeKW.substring(codeKW.indexOf("clot:") + 5);-->
+    <!--//                            $("#clot-txt").val(clot);-->
+    <!--//                            $.hidePreloader();-->
+    <!--//                            vm.getPiciScan();-->
+    <!--//-->
+    <!--//                        }else{-->
+    <!--//                            $.hidePreloader();-->
+    <!--//                            $.toast("条码未识别，请重试！");-->
+    <!--//-->
+    <!--//                        }-->
+    <!--//                        var file = document.getElementById("jsbridge");-->
+    <!--//                        file.value = "";-->
+    <!--//                    };-->
+
+    <!--};-->
+
+    <!--oFReader.readAsDataURL(oFile);-->
+    <!--},-->
+    <!--destory: function() {-->
+    <!--$(tempBtn).off('click');-->
+    <!--}-->
+    <!--};-->
+    <!--FlKwQrcode.init = function(tempBtn) {-->
+    <!--var _this_ = this;-->
+    <!--tempBtn.each(function() {-->
+    <!--new _this_($(this));-->
+    <!--});-->
+    <!--};-->
+    <!--window.FlKwQrcode = FlKwQrcode;-->
+    <!--})(window.Zepto ? Zepto : jQuery);-->
+    <!--</script>-->
+    <script type="text/javascript">
+        function CheckForm() {
+            return false;
+        }
+        if (/Android [4-6]/.test(navigator.appVersion)) {
+            window.addEventListener("resize", function () {
+                if (document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA") {
+                    window.setTimeout(function () {
+                        document.activeElement.scrollIntoViewIfNeeded();
+                    }, 0);
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>

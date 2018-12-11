@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.erpmapper.ErpStorageNumMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="kucun" property="code" jdbcType="INTEGER" />
+		<result column="keyong" property="dsca" jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="selectStorageNum" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select top 1 t_qhnd kucun,t_qhnd-t_qblk-t_qlal+t_qord keyong from
+		twhinr140${companyNo}
+		<where>
+			AND t_cwar = #{if1,jdbcType=VARCHAR}
+			<if test="if2 != null">
+				AND t_loca = #{if2,jdbcType=VARCHAR}
+			</if>
+			<if test="if2 == null">
+				AND t_loca = NULL
+			</if>
+			AND t_item = #{if3,jdbcType=VARCHAR}
+			<if test="if4 != null">
+				AND t_clot = #{if4,jdbcType=VARCHAR}
+			</if>
+			<if test="if4 == null">
+				AND t_clot = NULL
+			</if>
+
+
+		</where>
+	</select>
+
+
+
+</mapper>

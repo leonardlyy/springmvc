@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.orclmapper.WorkCenterMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="t$cwoc" property="code" jdbcType="VARCHAR" />
+		<result column="t$dsca" property="dsca" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t$cwoc, t$dsca
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		SELECT ttcemm124${companyNo}.t$cwoc,ttirou001${companyNo}.t$dsca FROM
+		baan.ttirou001${companyNo}
+		LEFT JOIN baan.ttcemm124${companyNo} ON ttcemm124${companyNo}.t$cwoc =
+		ttirou001${companyNo}.t$cwoc
+		<where>
+			<if test="if1 != null">
+				AND ttcemm124${companyNo}.t$grid = #{if1,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

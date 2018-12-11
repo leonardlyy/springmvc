@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>采购收货</title>
+    <link rel="stylesheet" href="css/sm.min.css">
+    <link rel="stylesheet" href="css/sm-extend.min.css">
+
+    <style>
+        body {
+            overflow: auto;
+        }
+		.content{
+		top:auto}
+        .content-item {
+            height: 33%;
+            display: flex;
+            justify-content: flex-start;
+            vertical-align: middle;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+
+        #index-page .content-item {
+            /*align-items: center;*/
+            align: middle;
+            height: 100%;
+            width: 100%;
+
+        } 
+        .list-block .item-content{
+                width: 100%;
+
+            }
+        .item {
+            width: 25%;
+            margin-top: .5rem;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align: center;
+            vertical-align: middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+
+        .item-icon {
+            top: .05rem;
+            height: 1.2rem;
+            font-size: 1.2rem;
+            line-height: 1.2rem;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .item-icon img {
+            max-width: 50px;
+            max-height: 50px;
+        }
+        
+		.list-block .item-input{
+			font-size: .65rem
+		}
+        .item-label {
+            display: block;
+            font-size: .65rem;
+            position: relative;
+            top: .15rem;
+        }
+        .list-block ul  {
+            
+        }
+        .list-block .item-title.label  {
+            
+            font-size: .75rem
+        }
+        .list-block input[type=text] {
+            font-size: .75rem
+        }
+        .list-block select {
+            font-size: .75rem
+        }
+        .bar button {
+            border: 0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+
+        .bar button img {
+            max-height: 100%;
+        }
+
+        .bar .icon img {
+            max-height: 10%;
+            max-width: 10%;
+        }
+
+        .content-padded .searchbar .icon img {
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+	.content-block {
+	margin: 0.5rem 0;
+	 
+	}
+        .function-content {
+            height: 100%;
+            width: 100%;
+            display: flex;
+        }
+
+        .focus-sub:focus {
+            background-color: #4cd964;
+            /*color: #0a8ddf;*/
+        }
+        .list-block {  margin: 0 0;
+        }
+    </style>
+    <style>
+        /*.qr-btn{width:6rem;height: 3rem; border-radius: 15% ; text-align: center; line-height: 3rem; color: white; font-size : 1rem; background-color:blue;}*/
+
+        input[node-type=jsbridge] {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-group" id="purchaseReceipt">
+        <div class="page page-current" id="purchaseReceipt-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title" v-cloak>{{page_header}} </h1>
+            </header>
+            <!--<form onsubmit="return CheckForm()">-->
+            <div class="content" id="content-id" @keyup="fFourKeyup($event)" style="margin-left: 2px;margin-right: 2px;text-align: left">
+                <div class="list-block">
+                    <ul style="margin-left: 2px;margin-right: 2px ">
+                        <!--公司 和系列号 style="height:0px" -->
+                        <li style="height:0px">
+                            <div class="row" style="height:0px">
+                                <div class="col-60">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label barcode_label" v-cloak>{{company_len}}</div>
+                                            <div class="item-input">
+                                                <!--<input type="text"  id="euntTxt" disabled="disabled" :placeholder="input_auto_len"   >-->
+                                                <select id="euntTxt" disabled @change="changeEunt()">
+                                                    <!--<option v-if="t.companyNo==companyNo"  selected v-for="t in createEunt" :value="t.companyNo">{{t.dsca}}({{t.code}})</option>-->
+                                                    <option v-for="t in createEunt" v-if="t.code==eunt" selected :value="t.code">{{t.code}}({{t.dsca}})</option>
+                                                    <option v-for="t in createEunt" v-if="t.code!=eunt" :value="t.code">{{t.code}}({{t.dsca}})</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-40">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label" v-cloak>{{series_len}}</div>
+                                            <div class="item-input">
+                                                <input type="text" id="seri-id" v-model="seri" disabled="disabled"
+                                                    :placeholder="input_auto_len">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 采购订单号 -->
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label barcode_label" v-cloak>{{order_no_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" @keyup="orderKeyup($event)" id="order-txt" :placeholder="input_enter_len">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <!-- 物料 -->
+                        <li>
+                            <a href="#purchaseLine-page" class="item-link item-content">
+                                <div class="item-content  " style=" padding-left: 0px">
+                                    <div class="item-inner">
+                                        <div class="item-title label" v-cloak>{{item_len}}</div>
+                                        <div class="item-input">
+                                            <span v-cloak>{{item}} </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li v-if="itemDsca!=''">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{item_dsca_len}}</div>
+                                    <div class="item-input">
+                                        <span v-cloak>{{itemDsca}}&nbsp;&nbsp;{{itemUnit}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <!-- 仓库 /行号 -->
+                        <li>
+                            <div class="row">
+                                <div class="col-60">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label" v-cloak>{{cwar_len}}</div>
+                                            <div class="item-input">
+                                                <span v-cloak>{{cwarCode}}&nbsp;&nbsp;{{cwarDsca}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-40">
+                                    <div class="item-content">
+                                        <div class="item-inner">
+                                            <div class="item-title label" style="width:35%;" v-cloak>{{line_len}}</div>
+                                            <div class="item-input" v-cloak>
+                                                <span v-cloak>{{ponoNum}}-{{ponbNum}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{need_receipt_len}}</div>
+                                    <div class="item-input" v-cloak>
+                                        <span v-cloak>{{qanaQty}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li v-show="isShowltct">
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{clot_len}}</div>
+                                    <div class="item-input" v-cloak>
+                                        <input type="text" @keyup="clotKeyup($event)" :placeholder="input_enter_len" id="clot-txt">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{package_qty_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" @keyup="packageQtyKeyup($event)" :placeholder="input_enter_len"
+                                            id="packageQty">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{receipt_qty_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" @keyup="receiptQtyKeyup($event)" :placeholder="input_enter_len"
+                                            id="receiptQty">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <!-- href="#warehouseLoca-page" -->
+                            <a href="javascript:void(0);" @onclick="js_method($event)" class="item-link item-content">
+                                <div class="item-content" style=" padding-left: 0px">
+                                    <div class="item-inner">
+                                        <div class="item-title label" v-cloak>{{loca_len}}</div>
+                                        <div class="item-input">
+                                            <input type="text" @keyup="locaKeyup($event)" id="loca-txt" :placeholder="input_enter_len">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{refe_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" id="refe-txt" @keyup="refeKeyup($event)" v-model="refe">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <input type="submit" class="button button-big button-fill button-light focus-sub" id="save-receipt"
+                            :value="receipt_len" @click="savePurchaseReceipt()">
+                        <!--<div ><a href="#" class="button button-big button-fill button-success"  id="save-warehouse"  @click="saveWarehouseRec()">{{}}</a></div>-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!--采购订单行Page-->
+        <div class="page " id='purchaseLine-page'>
+            <header class="bar bar-nav">
+                <a class="button button-link button-nav pull-left back" id="page_back">
+                    <span class="icon icon-left"></span>
+                </a>
+                <h1 class="title" v-cloak>{{purchaseline_len}} </h1>
+            </header>
+            <div class="content">
+                <div class="content-block">
+                    <div class="list-block media-list">
+                        <ul>
+                            <li v-for="item in purchaeline" @click="purchaseLineClick(item.item,item.dsca,item.cuni,item.qana,item.ltct,item.pono,item.ponb,item.bpidname)">
+                                <label class="label-checkbox item-content">
+                                    <input type="radio" name="my-radio">
+                                    <div class="item-media"><i class="icon icon-form-checkbox"></i></div>
+                                    <div class="item-inner">
+                                        <div class="item-title-row">
+                                            <div class="item-title">{{item.item}}</div>
+                                            <div class="item-after">{{item.qana}}</div>
+                                        </div>
+                                        <div class="item-subtitle">{{item.dsca}}</div>
+                                    </div>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--库位Page-->
+        <div class="page " id='warehouseLoca-page'>
+            <header class="bar bar-nav">
+                <a class="button button-link button-nav pull-left back" id="page_back">
+                    <span class="icon icon-left"></span>
+                </a>
+                <h1 class="title" v-cloak>{{warehouseLoca_len}} </h1>
+            </header>
+            <div class="content">
+                <div class="content-block">
+                    <div class="list-block media-list">
+                        <ul>
+                            <li v-for="item in localist" @click="warehouseLocaClick(item.code,item.dsca)">
+                                <label class="label-checkbox item-content">
+                                    <input type="radio" name="my-radio">
+                                    <div class="item-media"><i class="icon icon-form-checkbox"></i></div>
+                                    <div class="item-inner">
+                                        <div class="item-title-row">
+                                            <div class="item-title">{{item.code}}</div>
+                                        </div>
+                                        <div class="item-subtitle">{{item.dsca}}</div>
+                                    </div>
+                                </label>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--打印标签Page-->
+        <div class="page " id='printLabel-page'>
+            <header class="bar bar-nav">
+                <a class="button button-link button-nav pull-left back" id="page_back">
+                    <span class="icon icon-left"></span>
+                </a>
+                <h1 class="title" v-cloak>{{printLabel_len}} </h1>
+            </header>
+            <div class="content">
+                <div class="content-block">
+                    <div class="list-block">
+                        <ul style="margin-left: 2px;margin-right: 2px ">
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title label" v-cloak>{{per_package_qty_len}}</div>
+                                        <div class="item-input">
+                                            <span v-cloak>1</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title label" v-cloak>{{surplus_qty_len}}</div>
+                                        <div class="item-input">
+                                            <span v-cloak>{{surplusQty}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title label" v-cloak>{{box_qty_len}}</div>
+                                        <div class="item-input">
+                                            <input type="text" @keyup="boxQtyKeyup($event)" :placeholder="input_enter_len"
+                                                id="boxQty">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="item-content">
+                                    <div class="item-inner">
+                                        <div class="item-title label" v-cloak>{{per_box_qty_len}}</div>
+                                        <div class="item-input">
+                                            <input type="text" @keyup="perboxQtyKeyup($event)" :placeholder="input_enter_len"
+                                                id="perboxQty">
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="content-block">
+                        <div class="row">
+                            <input type="submit" class="button button-big button-fill button-light focus-sub" id="print-label"
+                                :value="print_len" @click="printItemLabel()">
+                            <!--<div ><a href="#" class="button button-big button-fill button-success"  id="save-warehouse"  @click="saveWarehouseRec()">{{}}</a></div>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--</form>-->
+    </div>
+
+    </div>
+    <script type="text/javascript" src="js/zepto.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/sm.min.js" charset="utf-8"></script>
+    <script src="js/qrcode.lib.min.js"></script>
+    <script type="text/javascript" src="js/vue.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/vue-resource.min.js"></script>
+    <script src="js/constant.js"></script>
+    <script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+    <script>
+        $.init();
+        var user = localStorage.getItem('user');
+        var userData = JSON.parse(user);
+        //var httpURL = "http://prodution.moonce.com/entering";
+        var httpURL1 = httpUrl + "entering";
+
+        var locaURL = locaUrl;
+        var vm = new Vue({
+            el: "#purchaseReceipt",
+            data: {
+                warehouseNo: "",
+                companyNo: "",
+                userid: "",
+                username: "",
+                userdefaultprinter: "",
+                page_header: "仓单发料",
+                purchaseline_len: "选择订单行",
+                warehouseLoca_len: "选择库位",
+                printLabel_len: "打印收货标签",
+                company_len: '公司',
+                series_len: '系列号',
+                order_no_len: '仓单*',
+                item_len: "物料",
+                item_dsca_len: "说明",
+                cwar_len: "仓库",
+                line_len: "行",
+                receipt_len: "收货",
+                print_len: "打印",
+                need_receipt_len: "未结数量",
+                clot_len: "批次",
+                package_qty_len: "装箱数量*",
+                receipt_qty_len: "收货数量*",
+                loca_len: "库位*",
+                refe_len: "备注",
+                per_package_qty_len: '每箱标签数',
+                surplus_qty_len: '剩余的数量',
+                box_qty_len: '箱数',
+                per_box_qty_len: '每箱数量',
+                createEunt: [],   //企业单元
+                purchaeline: [],
+                localist: [],
+                eunt: "",
+                seri: '',   //系列
+                item: '',
+                itemDsca: "", //物料说明
+                itemUnit: "", //物料单位
+                cwarCode: "",//仓库
+                cwarDsca: "",//仓库说明
+                ponoNum: "", //行号
+                ponbNum: "",
+                bpidname:"", //业务伙伴
+                qanaQty: 0,//未结数量
+                surplusQty: 0,
+                ltct: 2, //批次管理  
+                refe: "",//备注 
+                //------提示
+                input_auto_len: '自动生成',
+                input_enter_len: "输入完成后，回车",
+                packageQty_more_then_len: "超过未结数量",
+                receiptQty_more_then_len: "超过装箱数量",
+                not_loca_len: "库位不存在",
+                not_packageQty_len: "装箱数量为0",
+                receiptQty_unequal_packageQty_len: "收货数量不等于装箱数量",
+                no_order_information_len: '无采购订单行可收货',
+                successfully_sent_to_printer: '已成功发送到打印机！',
+                error_sent_to_printer: '打印失败，请检查打印机是否连接！',
+                boxqty_more_surplusQty_len: '包装数量大于剩余数量！',
+                save_success_len: '保存成功',
+                not_clot_len: '批次不存在',
+                default_warehouse_len: '你的默认仓库为：',
+                isShowltct: false,
+                //------API
+                getOrderInfoURL: httpURL1 + "/getPurchaseOrder",//获取采购订单行信息
+                checkLocaURL: httpURL1 + "/checkWarehouseLoca",//检查库位是否存在
+                getLocaAndClot: httpURL1 + "/getWarehouseLocaAndClot",//获取库位及批号               
+                createReceiptURL: httpURL1 + "/createReceipt",//创建收货行         
+                postClotPrinterURL: locaUrl + "printer/printclot", //打印批次       
+                getEuntURL: httpURL1 + "/eunt", //企业单元
+                getSeriURL: httpURL1 + "/series",//获取系列接口
+            },
+            watch: {
+
+            },
+            methods: {
+                //初始化加载
+                loadSelectItem: function () {
+                    console.log("1")
+                    $("#order-txt")[0].focus();
+                    if (userData.data.user.len == 'E') {
+
+                    }
+                    vm.companyNo = userData.data.user.companyNo;
+                    vm.userid = userData.data.user.id;
+                    vm.username = userData.data.user.username;
+                    vm.warehouseNo = userData.data.user.warehouseNo;
+                    vm.warehouseNo1 = userData.data.user.warehouseNo1;
+                    vm.userdefaultprinter = userData.data.user.defaultprinter;
+                    vm.otyp = userData.data.user.otyp;
+                    vm.seriD = userData.data.user.seri;
+                    vm.seriN = userData.data.user.seriN;
+                    vm.getEunt();
+                    $("#order-txt").focus();
+                },
+
+            }
+        })
+        vm.loadSelectItem();
+        function goBack() {
+            window.location.href = "index.html";
+        }
+        function wlKeyup() {
+            var e = window.event;
+            var code = e.keyCode || e.which || e.charCode;
+            if (code == 13) {
+
+            }
+        }
+
+    </script>
+
+    <script type="text/javascript">
+        function CheckForm() {
+            return false;
+        }
+        if (/Android [4-6]/.test(navigator.appVersion)) {
+            window.addEventListener("resize", function () {
+                if (document.activeElement.tagName == "INPUT" || document.activeElement.tagName == "TEXTAREA") {
+                    window.setTimeout(function () {
+                        document.activeElement.scrollIntoViewIfNeeded();
+                    }, 0);
+                }
+            })
+        }
+    </script>
+
+</body>
+
+</html>

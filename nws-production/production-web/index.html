@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>条码扫描系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/sm.min.css">
+    <!--<link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">-->
+    <style>
+        .content-item{
+            height: 33%;
+            display: flex;
+            justify-content: flex-start;
+            vertical-align:middle;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+        #index-page .content-item{
+            /*align-items: center;*/
+            align:middle;
+            height: 100%;
+            width: 100%;
+
+        }
+        .item{
+            width:25%;
+            margin-top: .5rem;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align:center;
+            vertical-align:middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .item-label{
+            display:block;
+            font-size:.65rem;
+            position:relative;
+            top:.15rem;
+        }
+        .bar button{
+            border:0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+        .bar button img{
+            max-height: 100%;
+        }
+        .bar .icon img{
+            max-height: 10%;
+            max-width: 10%;
+        }
+        .content-padded .searchbar .icon img{
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+        .function-content{
+            height: 100%;
+            width: 100%;
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-group">
+        <div class="page page-current" id="index-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left " @click="personal">
+                     {{name}}
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{title_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="function-content">
+                    <div class="content-item">
+                        <a class="item external" v-show="barcode_print" href="codePrinter.html">
+                            <span class="item-icon"><img src="img/dayin.png"></span>
+                            <span class="item-label">{{barcode_print_len}}</span>
+                        </a>
+                        <a class="item external" v-show="barcode_scan" href="codeScanNew.html">
+                            <span class="item-icon"><img src="img/saomiao.png"></span>
+                            <span class="item-label barcode_scan">{{barcode_scan_len}}</span>
+                        </a>
+                        <a class="item" href="" v-show="sale_control" >
+                            <span class="item-icon"><img src="img/xiaoshou.png"></span>
+                            <span class="item-label">{{sale_control_len}}</span>
+                        </a>
+                        <a class="item external" v-show="purchase_control"  href="PurchaseReceipt.html">
+                            <span class="item-icon"><img src="img/caigou.png"></span>
+                            <span class="item-label">{{purchase_control_len}}</span>
+                        </a>
+                        <a class="item external" v-show="stock_control" href="stroke.html">
+                            <span class="item-icon"><img src="img/kucun.png"></span>
+                            <span class="item-label">{{stock_control_len}}</span>
+                        </a>
+                        <a class="item external" v-show="print_settings" href="printer.html">
+                            <span class="item-icon"><img src="img/dayin.png"></span>
+                            <span class="item-label">{{print_settings_len}}</span>
+                        </a>
+                        <a class="item" v-show="jobnumber_settings" href="">
+                            <span class="item-icon"><img src="img/gonghao.png"></span>
+                            <span class="item-label">{{jobnumber_settings_len}}</span>
+                        </a>
+                        <a class="item external" v-show="offline_settings" href="offline.html">
+                            <span class="item-icon"><img src="img/lixian.png"></span>
+                            <span class="item-label">{{offline_settings_len}}</span>
+                        </a>
+                        <a class="item" v-show="data_settings" href="">
+                            <span class="item-icon"><img src="img/shuju.png"></span>
+                            <span class="item-label">{{data_settings_len}}</span>
+                        </a>
+                        <a class="item external" v-show="user_control" href="authority.html">
+                            <span class="item-icon"><img src="img/yonghu.png"></span>
+                            <span class="item-label">{{user_control_len}}</span>
+                        </a>
+                        <a class="item external" v-show="system_setting" href="system.html">
+                            <span class="item-icon"><img src="img/shezhi.png"></span>
+                            <span class="item-label">{{system_setting_len}}</span>
+                        </a>
+                        <a class="item external"   v-show="personal_center"  href="personal.html">
+                            <span class="item-icon"><img src="img/quanxian2.png"></span>
+                            <span class="item-label">{{personal_center_len}}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>-->
+    <!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>-->
+    <script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+    <script src="js/constant.js"></script>
+    <script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+    <script>
+        $.init();
+        var user=localStorage.getItem('user');
+        var userData=JSON.parse(user);
+        var index = new Vue({
+            el:'#index-page',
+            data:{
+                name:'',
+                barcode_print:false,
+                barcode_scan:false,
+                sale_control:false,
+                purchase_control:false,
+                stock_control:false,
+                print_settings:false,
+                jobnumber_settings:false,
+                offline_settings:false,
+                data_settings:false,
+                user_control:false,
+                system_setting:false,
+                personal_center:false,
+                barcode_print_len:'条码打印',
+                barcode_scan_len:'条码扫描',
+                sale_control_len:'销售管理',
+                purchase_control_len:'采购收货',
+                stock_control_len:'库存管理',
+                print_settings_len:'打印机设置',
+                jobnumber_settings_len:'工号设置',
+                offline_settings_len:'离线设置',
+                data_settings_len:'数据设置',
+                user_control_len:'用户管理',
+                system_setting_len:'系统设置',
+                personal_center_len:'个人中心',
+                title_len:'条码系统'
+            },
+            methods:{
+                userJudge:function () {
+                    console.log()
+                    if(user==null){
+                        window.location.href="login.html";
+                    }
+
+                    if(userData!=null){
+                        index.name=userData.data.user.name;
+                        index.personal_center = true;
+
+                    if(userData.data.user.len=='E'){
+//                        index.name='User：' + userData.data.user.name;
+                        index.barcode_print_len = 'Barcode Printing';
+                        index.barcode_scan_len = 'Barcode Scanner';
+                        index.sale_control_len = 'Sales Management';
+                        index.purchase_control_len = 'Purchase Receipt Management';
+                        index.stock_control_len = 'Inventory Management';
+                        index.print_settings_len = 'Printer Settings';
+                        index.jobnumber_settings_len = 'No Settings';
+                        index.offline_settings_len = 'Offline Settings';
+                        index.data_settings_len = 'Data Settings';
+                        index.user_control_len = 'User Management';
+                        index.system_setting_len = 'System Settings';
+                        index.personal_center_len = 'Personal Center';
+                        index.title_len = 'Barcode System';
+
+                    }
+                    for(var i=0;i<userData.data.authority.length;i++){
+//                        console.log(userData.data.authority[i].name);
+                        if(userData.data.authority[i].name=="barcode_print"){
+                            index.barcode_print = true
+                        }
+                        if(userData.data.authority[i].name=="barcode_scan"){
+                            index.barcode_scan = true
+                        }
+                        if(userData.data.authority[i].name=="sale_control"){
+                            index.sale_control = true
+                        }
+                        if(userData.data.authority[i].name=="purchase_control"){
+                            index.purchase_control = true
+                        }
+                        if(userData.data.authority[i].name=="stock_control"){
+                            index.stock_control = true
+                        }if(userData.data.authority[i].name=="print_settings"){
+                            index.print_settings = true
+                        }
+                        if(userData.data.authority[i].name.indexOf("jobnumber_settings")>=0){
+                            index.jobnumber_settings = true
+                        }
+                        if(userData.data.authority[i].name=="offline_settings"){
+                            index.offline_settings = true
+                        }
+                        if(userData.data.authority[i].name=="data_settings"){
+                            index.data_settings = true
+                        }
+                        if(userData.data.authority[i].name=="user_control"){
+                            index.user_control = true
+                        }
+                        if(userData.data.authority[i].name=="system_setting"){
+                            index.system_setting = true
+                        }
+                        }
+                    }
+                },
+                exit:function () {
+                    localStorage.clear();
+                    window.location.href="login.html";
+                },
+                personal:function () {
+                    window.location.href="personal.html";
+                }
+
+            }
+        });
+        index.userJudge();
+
+    </script>
+</body>
+</html>

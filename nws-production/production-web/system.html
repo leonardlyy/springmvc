@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>条码扫描系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/sm.min.css">
+    <style>
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .bar button{
+            border:0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+        .bar button img{
+            max-height: 100%;
+        }
+        .bar .icon img{
+            max-height: 10%;
+            max-width: 10%;
+        }
+        .content-padded .searchbar .icon img{
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+        .bar-header-secondary~.content{
+            top: 3rem;
+        }
+        .content-item{
+            /*height: 33%;*/
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+        .item{
+            width:25%;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align:center;
+            vertical-align:middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .item-label{
+            display:block;
+            font-size:.65rem;
+            position:relative;
+            top:.15rem;
+        }
+    </style>
+</head>
+<body>
+<div class="page-group" id="system-page">
+    <div class="page page-current" id="index-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{system_setting_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="content-item">
+                <a class="item" href="#basic-setting-page">
+                    <span class="item-icon"><img src="img/jibenshezhi.png"></span>
+                    <span class="item-label">{{basic_setting_len}}</span>
+                </a>
+                <a class="item" href="#log-page">
+                                <span class="item-icon"><img src="img/cuowurizhi.png"></span>
+                    <span class="item-label">{{history_log_len}}</span>
+                </a>
+                <a class="item" @click="queryOnlineUser()">
+                    <span class="item-icon"><img src="img/quanxian2.png"></span>
+                    <span class="item-label">{{online_user_len}}</span>
+                </a>
+            </div>
+        </div>C
+    </div>
+
+    <!--基本设置页面-->
+    <div class="page" id="basic-setting-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{basic_setup}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-toggle"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">{{sync_len}}/{{async_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" id="asynbox" value="asyn">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-block">
+                <div class="col-100" @click="asynSet()"><a href="#" class="button button-big button-fill button-success">{{submit_len}}</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!--错误日志-->
+    <div class="page" id="log-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{system_setting_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="content-item">
+                <a class="item"  @click="startqueryHead()">
+                    <span class="item-icon"><img src="img/log.jpg"></span>
+                    <span class="item-label">{{Issue_Head}}</span>
+                </a>
+                <a class="item" href="#log-page-line" @click="startqueryLine()">
+                    <span class="item-icon"><img src="img/log.jpg"></span>
+                    <span class="item-label">{{Issue_Line}}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!--仓单头查询-->
+    <div class="page" id="log-page-head">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{history_log_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block">
+                <ul>
+                    <li class="item-content" v-for=" l in createHead">
+                        <div class="item-inner" @click="showHeadDetails(l.method,l.user,l.oorg,l.orno,l.oset,l.ittp,l.otyp,l.seri,l.sfco,l.sflo,l.stco,l.createDate,l.modifyDate)">
+                            <div class="item-title">{{l.method}}</div>
+                            <div class="item-content" v-if="l.status==0" style="color: #f00b0d">error</div>
+                            <div class="item-after">{{l.createDate}}</div>
+                        </div>
+                    </li>
+                </ul>
+                <infinite-loading :on-infinite="queryHead"    ref="infiniteLoading"  v-if="pagediv=='head'"></infinite-loading>
+            </div>
+        </div>
+    </div>
+    <!--在线用户查询-->
+    <div class="page" id="online-user-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{online_user_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block">
+                <ul>
+                    <li class="item-content" v-for=" l in onlineUser">
+                        <div class="item-inner">
+                            <div class="item-title">{{l.username}}</div>
+                            <div class="item-content" >{{l.lastvisitdate}}</div>
+                            <div class="item-after">{{l.name}}</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!--仓单行查询-->
+    <div class="page" id="log-page-line">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{history_log_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block">
+                <ul>
+                    <li class="item-content" v-for=" l in createLine">
+                        <div class="item-inner" @click="showLineDetails(l.method,l.user,l.oorg,l.orno,l.oset,l.pono,l.item,l.dsca,l.qoro,l.orun,l.lsel,l.clot,l.serl,l.createDate,l.modifyDate)">
+                            <div class="item-title">{{l.method}}</div>
+                            <div class="item-content" v-if="l.status==0" style="color: #f00b0d">error</div>
+                            <div class="item-after">{{l.createDate}}</div>
+                        </div>
+                    </li>
+                </ul>
+                <!--<infinite-loading :on-infinite="queryHead"  :distance="100"  ref="infiniteLoading" ></infinite-loading>-->
+                <infinite-loading :on-infinite="queryLine"  :distance="100"  ref="infiniteLoading" v-if="pagediv=='line'" ></infinite-loading>
+            </div>
+        </div>
+    </div>
+
+    <!--错误日志详细仓单头-->
+    <div class="page" id="log-details-head">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{log_details_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{method_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="method">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{user_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="user">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{oorg_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="oorg">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{orno_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="orno">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{oset_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="oset">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{ittp_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="ittp">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{otyp_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="otyp">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{seri_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="seri">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{sfco_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="sfco">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{sflo_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="sflo">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{stco_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="stco">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{create_date_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="createDate">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{modify_date_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="modifyDate">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!--<div class="content-block">
+                <div class="row">
+                    <div class="col-100"><a href="#" class="button button-big button-fill button-success">再处理</a></div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+
+    <!--错误日志详情仓单行-->
+    <div class="page" id="log-details-line">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{log_details_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{method_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="linemethod">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{user_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="lineuser">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{oorg_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="lineoorg">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{orno_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="lineorno">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{oset_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="lineoset">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{order_line_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="linepono">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{item_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="lineitem">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{item_description_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="linedsca">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{num_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="lineqoro">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{num_unit_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="lineorun">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{batch_selection_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="linelsel">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{batch_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="lineclot">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{serial_number_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="lineserl">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{create_date_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="linecreateDate">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{modify_date_len}}</div>
+                                <div class="item-input">
+                                    <input type="text"   :value="linemodifyDate">
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!--<div class="content-block">
+                <div class="row">
+                    <div class="col-100"><a href="#" class="button button-big button-fill button-success">再处理</a></div>
+                </div>
+            </div>-->
+        </div>
+    </div>
+
+
+
+
+
+
+
+</div>
+
+<!--<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>-->
+<!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>-->
+<script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+<script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/vue-resource.min.js"></script>
+
+<script type="text/javascript" src="js/vue-infinite-loading.js"></script>
+<script src="js/lodash.min.js"></script>
+<script src="js/constant.js"></script>
+<script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+<!--<script type="text/javascript" src="js/vue-resource.min.js" charset="utf-8"></script>-->
+<script>
+    $.init();
+
+    var httpURL=httpUrl+"entering";
+ //   var httpURL ="http://localhost:8080/production/entering";
+
+    var user=localStorage.getItem('user');
+    var userData=JSON.parse(user);
+    var vm =new Vue({
+        el: '#system-page',
+        data :{
+            system_setting_len : '系统设置',
+            basic_setting_len : '基本设置',
+            history_log_len : "历史日志",
+            Issue_Head:'仓单头',
+            Issue_Line:'仓单行',
+            basic_setup:'基本设置',
+            online_user_len:'在线用户',
+            sync_len : "同步",
+            async_len : "异步",
+            submit_len : "提交",
+            log_details_len : "日志详情",
+            method_len : "方法",
+            user_len : "用户",
+            oorg_len : "订单类型",
+            orno_len : "订单号",
+            oset_len : "集",
+            ittp_len : "事务处理类型",
+            otyp_len : "仓单类型",
+            seri_len : "系列",
+            sfco_len : "仓库",
+            sflo_len : "库位",
+            stco_len : "工作中心",
+            create_date_len : "创建时间",
+            modify_date_len : "修改时间",
+            order_line_len : "订单行",
+            item_len : "物料",
+            item_description_len : "物料说明",
+            num_len : "数量",
+            num_unit_len : "数量单位",
+            batch_selection_len : "批次选择",
+            batch_len : "批次",
+            serial_number_len : "序列号",
+            opened_async_len : "已开启离线模式",
+            closed_async_len : "已关闭离线模式",
+            pagediv:'',
+            //showDetails(l.method,l.user,l.oorg,l.orno,l.oset,l.ittp,l.otyp,l.seri,l.sfco,,l.sflo,l.stco,l.createDate,l.modifyDate)
+            //仓单头查询所需数据
+            queryHeadURL:httpURL+"/headpagelist",
+            headpage:0,
+            headpageSize:20,
+            createHead:[],
+            method:'',
+            user:'',
+            oorg:'',
+            orno:'',
+            oset:'',
+            ittp:'',
+            otyp:'',
+            seri:'',
+            sfco:'',
+            sflo:'',
+            stco:'',
+            createDate:'',
+            modifyDate:'',
+
+            //仓单行查询数据
+            //showLineDetails(l.method,l.user,l.oorg,l.orno,l.oset,l.pono,l.item,l.dsca,l.qoro,l.orun,l.lsel,l.clot,l.serl,l.create_date,l.moldify_date)
+            queryLineURL:httpURL+"/linepagelist",
+            queryOnlineUserURL:httpUrl+"/common/online-user-list",
+            linepage:0,
+            linepageSize:10,
+            createLine:[],
+            onlineUser:[],
+            linemethod:'',
+            lineuser:'',
+            lineoorg:'',
+            lineorno:'',
+            lineoset:'',
+            linepono:'',
+            lineitem:'',
+            linedsca:'',
+            lineqoro:'',
+            lineorun:'',
+            linelsel:'',
+            lineclot:'',
+            lineserl:'',
+            linecreateDate:'',
+            linemodifyDate:'',
+        },
+        methods :{
+            userJudge:function () {
+                if(userData!=null) {
+                    if (userData.data.user.len == 'E') {
+                        vm.system_setting_len = 'System Setting';
+                        vm.basic_setting_len = 'Basic Setting';
+                        vm.history_log_len = "History Log";
+                        vm.Issue_Head='Issue_Head';
+                        vm.Issue_Line='Issue_Line';
+                        vm.basic_setup='Basic setup';
+                        vm.online_user_len='Online users';
+                        vm.sync_len='Sync';
+                        vm.async_len='Async';
+                        vm.submit_len='Submit';
+                        vm.log_details_len='Log details';
+                        vm.method_len='method';
+                        vm.user_len='user';
+                        vm.oorg_len='Order type';
+                        vm.orno_len='Order number';
+                        vm.oset_len='oset';
+                        vm.ittp_len='ittp';
+                        vm.otyp_len='otyp';
+                        vm.seri_len='series';
+                        vm.sfco_len='warehouse';
+                        vm.sflo_len='Storage Location';
+                        vm.stco_len='Work center';
+                        vm.create_date_len='Create date';
+                        vm.modify_date_len='Modify date';
+                        vm.order_line_len='Order line';
+                        vm.item_len='Item';
+                        vm.item_description_len='Item description';
+                        vm.num_len='Num';
+                        vm.num_unit_len='Num unit';
+                        vm.batch_selection_len='Batch selection';
+                        vm.batch_len='Batch';
+                        vm.serial_number_len='Serial number';
+                        vm.opened_async_len='Async mode has been opened';
+                        vm.closed_async_len='Async mode has been closed';
+                    }
+                    vm.headpage=0;
+                    vm.linepage=0;
+                    vm.queryHead();
+                    vm.queryLine();
+                }
+                if(localStorage.getItem("asyn")!=null){
+                    var chk = document.getElementById('asynbox');
+                    chk.checked =true;
+                }
+            },
+            asynSet : function () {
+                var chk = document.getElementById('asynbox');
+                if(chk.checked){
+                    localStorage.setItem("asyn","asyn");
+                    $.toast(vm.opened_async_len)
+                }else{
+                    localStorage.removeItem("asyn");
+                    $.toast(vm.closed_async_len)
+                }
+            },
+            /*在线用户查询*/
+            queryOnlineUser:function () {
+                $.get(vm.queryOnlineUserURL,function (response) {
+                    console.log(response)
+                    var lines =JSON.parse(response);
+                    if(lines.code==1){
+                        vm.onlineUser = lines.data;
+                        $.router.load("#online-user-page");
+                    }else{
+                        $.toast(lines.message);
+                    }
+                });
+            },
+            //点击进入,主动开启
+            startqueryHead: function(){
+                console.log("查询");
+                vm.headpage=0;
+                $.router.load("#log-page-head");
+
+                vm.createHead=[];
+                vm.queryHead();
+            },
+            startqueryLine: function(){
+                vm.linepage=0;
+                console.log("查询");
+                $.router.load("#log-page-line");
+                vm.createLine=[];
+                vm.queryLine();
+            },
+            //查询仓单头
+            queryHead: function(){
+                var url=window.location.href;
+                console.log(url);
+                console.log(url.indexOf("#log-page-head"));
+                if(url.indexOf("#log-page-head")!=-1){
+                    vm.pagediv="head";
+                    vm.headpage++;
+                    $.get(vm.queryHeadURL,{
+                            pageNo : vm.headpage,
+                            pageSize: vm.headpageSize,
+                        },function (response) {
+                        console.log(response)
+                        var heads = JSON.parse(response);
+                        vm.createHead = vm.createHead.concat(heads.data.results);
+                        if(heads.data.results.length==vm.headpageSize){
+                            setTimeout(function () {
+                                vm.$refs.infiniteLoading.$emit('$InfiniteLoading:loaded');
+                            }.bind(vm), 1000);
+                        }else{
+                            vm.$refs.infiniteLoading.$emit('$InfiniteLoading:complete');
+                        }
+                    });
+
+                }
+            },
+            //查询仓单行
+            queryLine: function(){
+                var url=window.location.href;
+                if(url.indexOf("#log-page-line")!=-1){
+                    vm.pagediv="line";
+                    vm.linepage++;
+                   $.get(vm.queryLineURL,{
+                            pageNo : vm.linepage,
+                            pageSize: vm.linepageSize,
+                        },function (response) {
+                        console.log(response)
+                        var lines =JSON.parse(response);
+                        vm.createLine = vm.createLine.concat(lines.data.results);
+                        if(lines.data.results.length==vm.linepageSize){
+                            setTimeout(function () {
+                                vm.$refs.infiniteLoading.$emit('$InfiniteLoading:loaded');
+                            }.bind(vm), 1000);
+                        }else{
+                            vm.$refs.infiniteLoading.$emit('$InfiniteLoading:complete');
+                        }
+                    });
+                }
+            },
+            //显示具体的信息
+            //showDetails(l.method,l.user,l.oorg,l.orno,l.oset,l.ittp,l.otyp,l.seri,l.sfco,,l.sflo,l.stco,l.createDate,l.modifyDate)
+            showHeadDetails: function(method,user,oorg,orno,oset,ittp,otyp,seri,sfco,sflo,stco,createDate,modifyDate){
+                vm.method=method;
+                vm.user=user;
+                vm.oorg=oorg;
+                vm.orno=orno;
+                vm.oset=oset;
+                vm.ittp=ittp;
+                vm.otyp=otyp;
+                vm.seri=seri;
+                vm.sfco=sfco;
+                vm.sflo=sflo;
+                vm.stco=stco;
+                vm.createDate=createDate;
+                vm.modifyDate=modifyDate;
+                $.router.load("#log-details-head");
+            },
+            //showLineDetails(l.method,l.user,l.oorg,l.orno,l.oset,l.pono,l.item,l.dsca,l.qoro,l.orun,l.lsel,l.clot,l.serl,l.create_date,l.moldify_date)
+            showLineDetails: function(method,user,oorg,orno,oset,pono,item,dsca,qoro,orun,lsel,clot,serl,create_date,moldify_date){
+                vm.linemethod=method;
+                vm.lineuser=user;
+                vm.lineoorg=oorg;
+                vm.lineorno=orno;
+                vm.lineoset=oset;
+                vm.linepono=pono;
+                vm.lineitem=item;
+                vm.linedsca=dsca;
+                vm.lineqoro=qoro;
+                vm.lineorun=orun;
+                vm.linelsel=lsel;
+                vm.lineclot=clot;
+                vm.lineserl=serl;
+                vm.linecreateDate=create_date;
+                vm.linemodifyDate=moldify_date;
+                $.router.load("#log-details-line")
+            },
+            exit:function () {
+                localStorage.clear();
+                window.location.href="login.html";
+            },
+        }
+    })
+    vm.userJudge();
+
+    function goBack(){
+        if(window.location.hash=="#log-page-line"||window.location.hash=="#log-page-head"){
+            console.log(window.location.hash)
+            $.router.load("#log-page");
+        }else if(window.location.hash=="#log-page"){
+            window.location.href="system.html";
+        }else if(window.location.hash=="#log-details-head"||window.location.hash=="#log-details-head") {
+            if(window.location.hash=="#log-details-head"){
+                $.router.load("#log-page-head");
+            }else{
+                $.router.load("#log-page-line");
+            }
+        }else {
+                window.location.href="index.html";
+            }
+
+    }
+
+
+
+</script>
+</body>
+</html>

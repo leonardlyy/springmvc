@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.orclmapper.WarehouseLocaMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="t$loca" property="code" jdbcType="VARCHAR" />
+		<id column="t$dsca" property="dsca" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap id="BaseResultMap1"
+		type="com.lewei.production.model.Other">
+		<id column="t$CLOT" property="code" jdbcType="VARCHAR" />
+		<id column="t$dsca" property="dsca" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t$clot, t$ldat
+	</sql>
+	<select id="checkWarehouseLoca" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select t$loca,t$dsca from baan.twhwmd300${companyNo}
+		<where>
+			<if test="if1 != null and if1 != ''">
+				and baan.twhwmd300${companyNo}.t$cwar = #{if1,jdbcType=VARCHAR}
+			</if>
+			<if test="if2 != null and if2 != ''">
+				and baan.twhwmd300${companyNo}.t$loca = #{if2,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+	<select id="getWarehouseLoca" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		SELECT t$loca,t$dsca
+		FROM (SELECT a.t$loca, b.t$dsca, 1 typ
+		FROM baan.twhwmd302${companyNo} a
+		INNER JOIN
+		baan.twhwmd300${companyNo} b
+		ON a.t$cwar = b.t$cwar AND a.t$loca = b.t$loca
+		WHERE t$item = #{if2,jdbcType=VARCHAR} AND a.t$cwar =
+		#{if1,jdbcType=VARCHAR}
+		UNION
+		SELECT t$loca, t$dsca, 2
+		FROM baan.twhwmd300${companyNo}
+		WHERE t$cwar = #{if1,jdbcType=VARCHAR} AND T$loca IN ('Z', 'INS')) dat
+		ORDER BY typ
+	</select>
+	<select id="getWarehouseBatch" resultMap="BaseResultMap1"
+		parameterType="com.lewei.production.model.Condition">
+		SELECT 'L'||TO_CHAR(SYSDATE,'YYMMDD')||MAX(t$CLOT) T$CLOT ,' ' t$dsca from (
+		select to_char( to_number(SUBSTR(t$clot,8,5))+1,'FM999909999') t$clot
+		from baan.twhltc100${companyNo} where substr(t$clot,1,7)
+		='L'||TO_CHAR(SYSDATE,'YYMMDD')
+		union
+		select to_char( to_number(SUBSTR(t$clot,8,5))+1,'FM999909999') t$clot from
+		baan.TWHINR931${companyNo} where substr(t$clot,1,7)
+		='L'||TO_CHAR(SYSDATE,'YYMMDD')
+		union
+		select to_char( 1,'FM999909999') from dual )
+
+	</select>
+</mapper>

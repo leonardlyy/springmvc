@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.orclmapper.StorageNumMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="kucun" property="code" jdbcType="INTEGER" />
+		<result column="keyong" property="dsca" jdbcType="INTEGER" />
+	</resultMap>
+
+	<select id="selectStorageNum" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select t$qhnd - ( select NVL(sum(T$qoor),0) from
+		baan.twhinr930${companyNo} b where b.t$stat in (0,2) and b.T$item =
+		baan.twhinr140${companyNo}.t$item and b.t$clot=
+		baan.twhinr140${companyNo}.t$clot and b.t$sfco=
+		baan.twhinr140${companyNo}.t$cwar) kucun,
+		t$qhnd-t$qblk-t$qlal+t$qord - ( select NVL(sum(T$qoor),0) from baan.twhinr930${companyNo} b where
+		b.t$stat in (0,2) and b.T$item = baan.twhinr140${companyNo}.t$item and
+		b.t$clot= baan.twhinr140${companyNo}.t$clot and b.t$sfco=
+		baan.twhinr140${companyNo}.t$cwar) keyong
+		from baan.twhinr140${companyNo}
+		<where>
+			AND t$cwar = #{if1,jdbcType=VARCHAR}
+			<if test="if2 != null">
+				AND t$loca = #{if2,jdbcType=VARCHAR}
+			</if>
+			<if test="if2 == null">
+				AND t$loca = ' '
+			</if>
+			AND t$item = #{if3,jdbcType=VARCHAR}
+			<if test="if4 != null">
+				AND t$clot = #{if4,jdbcType=VARCHAR}
+			</if>
+			<if test="if4 == null">
+				AND t$clot = ' '
+			</if>
+			AND ROWNUM = 1
+		</where>
+	</select>
+
+
+
+</mapper>

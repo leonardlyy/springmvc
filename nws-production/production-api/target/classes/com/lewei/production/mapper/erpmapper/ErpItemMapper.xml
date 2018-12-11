@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.erpmapper.ErpItemMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="t_item" property="code" jdbcType="VARCHAR" />
+		<result column="t_seak" property="dsca" jdbcType="VARCHAR" />
+
+	</resultMap>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		twhwmd210${companyNo}.t_item,twhwmd400${companyNo}.t_seak
+		from twhwmd210${companyNo}
+		LEFT JOIN twhwmd400${companyNo}
+		on twhwmd210${companyNo}.t_item=twhwmd400${companyNo}.t_item
+		where twhwmd210${companyNo}.t_cwar = #{if1,jdbcType=VARCHAR}
+		ORDER BY twhwmd210${companyNo}.t_item
+	</select>
+
+	<select id="selectDsca" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		twhwmd210${companyNo}.t_item,twhwmd400${companyNo}.t_seak
+		from twhwmd210${companyNo}
+		LEFT JOIN twhwmd400${companyNo}
+		on twhwmd210${companyNo}.t_item=twhwmd400${companyNo}.t_item
+		<where>
+			<if test="if1 != null and if1 != ''">
+				and twhwmd210${companyNo}.t_cwar = #{if1,jdbcType=VARCHAR}
+			</if>
+			<if test="if2 != null and if2 != ''">
+				and twhwmd210${companyNo}.t_item = #{if2,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

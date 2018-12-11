@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.orclmapper.WarehouseLineMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.ErpWarehouseLine">
+		<id column="t$oorg" property="oorg" jdbcType="INTEGER" />
+		<id column="t$orno" property="orno" jdbcType="VARCHAR" />
+		<id column="t$oset" property="oset" jdbcType="INTEGER" />
+		<id column="t$pono" property="pono" jdbcType="INTEGER" />
+		<result column="t$item" property="item" jdbcType="VARCHAR" />
+		<result column="t$qoro" property="qoro" jdbcType="DOUBLE" />
+		<result column="t$orun" property="orun" jdbcType="VARCHAR" />
+		<result column="t$lsel" property="lsel" jdbcType="INTEGER" />
+		<result column="t$clot" property="clot" jdbcType="VARCHAR" />
+		<result column="t$serl" property="serl" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t$oorg,t$orno,t$oset,t$pono,t$item,t$qoro,t$orun,t$lsel,t$clot,t$serl
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		<include refid="Base_Column_List" />
+		from baan.twhinh220${companyNo}
+		where t$oorg = 51
+		and t$orno = #{if1,jdbcType=VARCHAR}
+		<if test="in1 != null and in1 != ''">
+			and t$oset = #{in1,jdbcType=INTEGER}
+		</if>
+	</select>
+	<select id="selectMinOset" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		<include refid="Base_Column_List" />
+		from baan.twhinh220${companyNo}
+		where t$oorg = 51
+		and t$orno = #{if1,jdbcType=VARCHAR}
+		<if test="in1 != null and in1 != ''">
+			and t$oset = #{in1,jdbcType=INTEGER}
+		</if>
+		AND t$lsta = 5
+	</select>
+
+	<select id="selectMaxOset" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		MAX(t$pono) t$pono
+		from baan.twhinh220${companyNo}
+		where t$oorg = 51
+		and t$orno = #{if1,jdbcType=VARCHAR}
+		<if test="in1 != null and in1 != ''">
+			and t$oset = #{in1,jdbcType=INTEGER}
+		</if>
+	</select>
+</mapper>

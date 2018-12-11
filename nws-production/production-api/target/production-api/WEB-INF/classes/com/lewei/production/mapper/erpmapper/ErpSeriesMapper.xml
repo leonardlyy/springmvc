@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.erpmapper.ErpSeriesMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="t_seri" property="code" jdbcType="VARCHAR" />
+		<result column="t_dsca" property="dsca" jdbcType="VARCHAR" />
+
+	</resultMap>
+	<sql id="Base_Column_List">
+		t_seri, t_dsca
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		<include refid="Base_Column_List" />
+		from ttcmcs050${companyNo}
+		<where>
+			<if test="if1 != null and if1 != ''">
+				and t_nrgr = #{if1,jdbcType=VARCHAR}
+			</if>
+		</where>
+
+	</select>
+</mapper>

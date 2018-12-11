@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.promapper.UserDutyAuthorityMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.UserDutyAuthority">
+		<result column="dutyid" property="dutyid" jdbcType="INTEGER" />
+		<result column="authorityid" property="authorityid"
+			jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="relevanceResultMap"
+		type="com.lewei.production.model.UserDutyAuthority"
+		extends="BaseResultMap">
+		<association property="module"
+			javaType="com.lewei.production.model.Authority">
+			<result column="authorityid" property="id" jdbcType="INTEGER" />
+			<result column="name" property="name" jdbcType="VARCHAR" />
+			<result column="remark" property="remark" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	<resultMap id="AuthorityResultMap"
+		type="com.lewei.production.model.Authority">
+		<result column="authorityid" property="id" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		dutyid, authorityid
+	</sql>
+	<delete id="deleteByPrimaryKey"
+		parameterType="java.lang.Integer">
+		delete from user_duty_authority
+		where dutyid = #{dutyid,jdbcType=INTEGER}
+	</delete>
+	<select id="selectDuty" resultMap="AuthorityResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		,authority.name ,authority.remark
+		from user_duty_authority
+		LEFT JOIN authority ON user_duty_authority.authorityid = authority.id
+		where dutyid = #{dutyid,jdbcType=INTEGER}
+	</select>
+	<insert id="savelist" parameterType="java.util.List">
+		insert into user_duty_authority(dutyid, authorityid)
+		values
+		<foreach collection="list" item="userDutyAuthorities"
+			index="index" separator=",">
+			(
+			#{userDutyAuthorities.dutyid,jdbcType=INTEGER},
+			#{userDutyAuthorities.authorityid,jdbcType=INTEGER}
+			)
+		</foreach>
+	</insert>
+</mapper>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.erpmapper.ErpWarehouseLineMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.ErpWarehouseLine">
+		<id column="t_oorg" property="oorg" jdbcType="INTEGER" />
+		<id column="t_orno" property="orno" jdbcType="VARCHAR" />
+		<id column="t_oset" property="oset" jdbcType="INTEGER" />
+		<id column="t_pono" property="pono" jdbcType="INTEGER" />
+		<result column="t_item" property="item" jdbcType="VARCHAR" />
+		<result column="t_qoro" property="qoro" jdbcType="DOUBLE" />
+		<result column="t_orun" property="orun" jdbcType="VARCHAR" />
+		<result column="t_lsel" property="lsel" jdbcType="INTEGER" />
+		<result column="t_clot" property="clot" jdbcType="VARCHAR" />
+		<result column="t_serl" property="serl" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t_oorg,t_orno,t_oset,t_pono,t_item,t_qoro,t_orun,t_lsel,t_clot,t_serl
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		<include refid="Base_Column_List" />
+		from twhinh220${companyNo}
+		where t_oorg = 51
+		and t_orno = #{if1,jdbcType=VARCHAR}
+		<if test="in1 != null and in1 != ''">
+			and t_oset = #{in1,jdbcType=INTEGER}
+		</if>
+	</select>
+
+</mapper>

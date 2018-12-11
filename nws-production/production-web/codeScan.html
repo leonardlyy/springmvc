@@ -1,0 +1,873 @@
+<!--已作废，改为codeScanNew-->
+<!DOCTYPE html>
+<html lang="en" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>条码扫描系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="css/sm.min.css">
+    <style>
+        .content-item{
+            /*height: 33%;*/
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+        .item{
+            width:25%;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align:center;
+            vertical-align:middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .item-label{
+            display:block;
+            font-size:.65rem;
+            position:relative;
+            top:.15rem;
+        }
+        .bar button{
+            border:0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+        .bar button img{
+            max-height: 100%;
+        }
+        .bar .icon img{
+            max-height: 10%;
+            max-width: 10%;
+        }
+        .content-padded .searchbar .icon img{
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+        .bar-header-secondary~.content{
+            top: 3rem;
+        }
+    </style>
+    <style>
+        /*.qr-btn{width:6rem;height: 3rem; border-radius: 15% ; text-align: center; line-height: 3rem; color: white; font-size : 1rem; background-color:blue;}*/
+        input[node-type=jsbridge]{display:none;}
+    </style>
+</head>
+<body>
+    <div class="page-group" id="codeScan-page">
+        <!--条码扫描主页面-->
+        <div class="page page-current" id="index-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">条码扫描</h1>
+            </header>
+            <div class="content">
+                <div class="content-item">
+                    <a class="item" href="#create-new-page" @click="loadSelectItem()">
+                        <span class="item-icon"><img src="img/ruku.png"></span>
+                        <span class="item-label">发料</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        <!--新增出料页面-->
+        <div class="page " id="create-new-page" v-cloak>
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">新建发料</h1>
+            </header>
+            <div class="content">
+                <div class="content-block-title">订单头信息</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">订单类型</div>
+                                    <div class="item-input">
+                                        <select id="createOorg">
+                                            <option value="production.man">车间管理生产订单(人工)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">订单号</div>
+                                    <div class="item-input">
+                                        <input type="text" id="orno-text" disabled placeholder="保存后自动生成">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">事物类型</div>
+                                    <div class="item-input">
+                                        <select id="createIttp">
+                                            <option value="issue">发料</option>
+                                            <!--<option value="1">收货</option>-->
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">系列</div>
+                                    <div class="item-input">
+                                        <select id="createSeri">
+                                            <option value="0">===请选择系列===</option>
+                                            <option v-for="s in createSeri" v-bind:value="s.code">{{s.dsca}}({{s.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">仓单类型</div>
+                                    <div class="item-input">
+                                        <select id="createOtyp">
+                                            <option value="0">===请选择仓单类型===</option>
+                                            <option v-for="t in createOType" :value="t.code">{{t.dsca}}({{t.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">工作中心</div>
+                                    <div class="item-input">
+                                        <select id="createStco" @change="textss()">
+                                            <option value="0">===请选择工作中心===</option>
+                                            <option v-for="t in createWorkCenter" v-bind:value="t.code">{{t.dsca}}({{t.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">仓库</div>
+                                    <div class="item-input" >
+                                        <input type="text" style="float:left;width: 80%" id="ck-kw-text" placeholder="手工或扫码输入" @keyup="ckKeyup($event)">
+                                        <div style="float:right;text-align: center;" class="content-padded"  node-type="scan-kw-btn"><span  class="icon icon-code"></span>
+                                            <input type="file" name="myPhoto" id="jsbridge" node-type="jsbridge" value="扫描二维码" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">库位</div>
+                                    <div class="item-input">
+                                        <input type="text"  id = "kw-text" placeholder="手工或扫码输入">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block-title" id="outline" v-if="createOutlineFlag == 1">订单行信息</div>
+                <div class="content-block">
+                    <div class="row">
+                        <div v-if="createState == 0" class="col-100" @click="saveHeader()"><a href="#" class="button button-big button-fill button-success">保存</a></div>
+                    </div>
+                    <div class="row">
+                        <div v-if="createState == 1" class="col-50" @click="clearAll()"><a href="#" class="button button-big button-fill button-danger">清空数据</a></div>
+                        <div v-if="createState == 1" class="col-50" @click="createOutline()"><a href="#" class="button button-big button-fill">新增订单行</a></div>
+                    </div>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div v-if="createState == 2"  class="col-50" @click="deleteLastOutline()"><a href="#" class="button button-big button-fill button-danger">删除当前行</a></div>
+                        <div v-if="createState == 2"  class="col-50" @click="saveLine()"><a href="#" class="button button-big button-fill button-success">提交当前行</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+    <script src="js/qrcode.lib.min.js"></script>
+    <script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/vue-resource.min.js"></script>
+    <script src="js/constant.js"></script>
+    <script>
+        $.init();
+        var user=localStorage.getItem('user');
+        var userData=eval("("+user+")");
+        //var httpURL = "http://prodution.moonce.com/entering";
+        var httpURL = httpUrl+"entering";
+ //       var httpURL ="http://localhost:8080/production/entering";
+        var vm = new Vue({
+            el:"#codeScan-page",
+            data:{
+                companyNo:"",
+                userid : "",
+                getOtypURL : httpURL + "/type",//获取仓单类型接口
+                getSeriURL : httpURL + "/series",//获取系列接口
+                getSfcoURL : httpURL + "/warehouse",//获取仓库,库位接口
+                getStcoURL : httpURL + "/workcenter",//获取工作中心接口
+                getItemInfoURL : httpURL + "/itemall",//获取物料信息
+                getBatchURL : httpURL + "/batch",
+                getCreateHeadInfo : httpURL + "/create",
+                getCreateoutlineInfo :  httpURL + "/createoutline",
+                orno : "",
+                oset : 1,
+                createState : 0,
+                createOutlineFlag : 0,
+                createTotalOutline : 0,
+                createWorkCenter:{},
+                createOType : {},
+                createSeri:{},
+                picilist : {},
+                asynflag : ""
+            },
+            methods:{
+//                ittp未使用
+                getOtypeByIttp : function(){
+                    var val = $("#createIttp").val();
+                    console.log(2);
+                    if(!val){
+                        $.toast("请先选择事物类型");
+                    }else{
+                        this.$http.get(this.getOtypURL,{
+                            params :{
+                                ittp :val
+                            }
+                            })
+                            .then(function(response){
+                                var type = eval("("+response.body+")");
+                                if(type.code == 1){
+                                    vm.createOType = type.data.Type;
+//                                    console.log(vm.createOType);
+                                }else{
+
+                                }
+                            },function(response){
+
+                            });
+                    }
+                },
+                saveHeader:function(){
+                    var oorg = $("#createOorg").val();
+                    var ittp = $("#createIttp").val();
+                    var otyp = $("#createOtyp").val();
+                    var seri = $("#createSeri").val();
+                    var stco = $("#createStco").val();
+                    var sfco = $("#ck-kw-text").val();
+                    var sflo = $("#kw-text").val();
+                    console.log(oorg);
+                    console.log(ittp);
+                    console.log(otyp);
+                    console.log(seri);
+                    console.log(stco);
+                    if(!oorg || oorg == ""){
+                        $.toast("请选择订单类型，如果您已选择订单类型仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+                    if(!ittp){
+                        $.toast("请选择事物类型，如果您已选择事物类型仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+                    if(!seri || seri == 0){
+                        $.toast("请选择系列，如果您已选择系列仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+                    if(otyp == 0 || !otyp){
+                        $.toast("请选择仓单类型，如果您已选择仓单类型仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+                    if(!stco || stco == 0){
+                        $.toast("请选择工作中心，如果您已选择工作中心仍看到此条信息，请尝试重新选择");
+                        return;
+                    }
+                    if(localStorage.getItem("asyn")!=null){
+                        $.showPreloader('正在保存到本地...');
+                        var date=new Date();
+                        this.asynflag=date.getTime();
+                        var head={"asynid":this.asynflag,"oorg":oorg,"ittp":ittp,"otyp":otyp,"seri":seri,"sfco":sfco,"sflo":sflo,"stco":stco,"companyNo":this.companyNo,"userid":this.userid};
+                        var heads=new Array;
+                        if(localStorage.getItem("heads")!=null){
+                            heads=JSON.parse(localStorage.getItem("heads"))
+                        }
+                        heads.push(head);
+                        localStorage.setItem("heads",JSON.stringify(heads))
+                        $.hidePreloader();
+                        this.createState = 1;
+                        this.createOutlineFlag = 1;
+                        $.toast("保存成功");
+                    for(i=0;i<heads.length;i++){
+                        console.log(heads[i])
+                    }
+                    }else{
+                        $.showPreloader('正在保存...');
+                        this.$http.get(this.getCreateHeadInfo ,{
+                        params : {
+                            oorg : oorg,
+                            ittp : ittp,
+                            otyp : otyp,
+                            seri : seri,
+                            sfco : sfco,
+                            sflo : sflo,
+                            stco : stco,
+                            companyNo : this.companyNo,
+                            userid : this.userid
+                        }
+                    }).then(function(response){
+                            var data = eval("("+response.body+")");
+                            $.hidePreloader();
+                            if(data.code == 1){
+                                $.toast("保存成功");
+                                $("#orno-text").val(data.data.orno +" "+data.data.oset)
+                                this.orno=data.data.orno;
+                                this.oset =data.data.oset;
+                                this.createState = 1;
+                                this.createOutlineFlag = 1;
+                            }
+                        },function(response){
+                            $.hidePreloader();
+                            $.toast("创建失败，请重试");
+                        })
+                    }
+                },
+                createOutline:function(){
+//                    var dom = $('div#outline.content-block-title');
+                    var dom;
+                    if(this.createTotalOutline <= 0){
+                        dom = $('#outline');
+                    }else{
+                        dom = $('#outline-' + this.createTotalOutline);
+                    }
+                    console.log(dom);
+                    this.createTotalOutline += 1;
+                    var t = '<div class="list-block" id="outline-' + this.createTotalOutline + '">\
+                            <ul>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">订单行</div>\
+                                            <div class="item-input">\
+                                                <input disabled id="outline-'+ this.createTotalOutline + '-pono" type="text" placeholder="保存后自动生成" >\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">物料</div>\
+                                            <div class="item-input">\
+                                                <div style="float:right;text-align: center;" class="content-padded" onclick="downKw()" node-type="scan-kw-btn"><span  class="icon icon-code"></span>\
+                                                </div>\
+                                                <input id="outline-'+ this.createTotalOutline + '-item" style="float:left;width: 80%" type="text" placeholder="手工或扫码输入" onkeyup="wlKeyup()">\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">物料说明</div>\
+                                            <div class="item-input">\
+                                                <input disabled id="outline-' + this.createTotalOutline + '-itemIntro" type="text" placeholder="系统填写">\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">数量</div>\
+                                            <div class="item-input">\
+                                                <input id="outline-' + this.createTotalOutline + '-num" type="number" value="1">\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                \<li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">单位</div>\
+                                            <div class="item-input">\
+                                                <input id="outline-' + this.createTotalOutline + '-unit" type="text" >\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">序列号</div>\
+                                            <div class="item-input">\
+                                                <input id="outline-' + this.createTotalOutline + '-xl" type="text" placeholder="用户可自行修改">\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                 <li>\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">批次类型</div>\
+                                            <div class="item-input">\
+                                                <select id="outline-' + this.createTotalOutline + '-lsel" onchange="piciShow('+this.createTotalOutline+')">\
+                                                    <option value="any">任意</option>\
+                                                    \<option value="same">相同</option>\
+                                                    \<option value="specific">指定</option>\
+                                                </select>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                                <li id="outline-' + this.createTotalOutline + '-picili"  style="display:none">\
+                                    <div class="item-content">\
+                                        <div class="item-inner">\
+                                            <div class="item-title label">批次</div>\
+                                            <div class="item-input">\
+                                                 <select id="outline-' + this.createTotalOutline + '-pici">\
+                                                </select>\
+                                            </div>\
+                                        </div>\
+                                    </div>\
+                                </li>\
+                            </ul>\
+                        </div>';
+//                    console.log(dom.length);
+                    dom.after(t);
+                    $("#outline-"+ this.createTotalOutline +"-item")[0].focus();
+                    this.createState = 2;
+                },
+                deleteLastOutline :function () {
+                    if(this.createTotalOutline <= 0){
+                       $.toast("没有订单行了！")
+                        this.createState = 1;
+                    }else{
+                        $("#outline-"+ this.createTotalOutline).remove();
+                        this.createTotalOutline -= 1;
+                        this.createState = 1;
+                    }
+                },
+                saveLine : function () {
+                    var oorg = $("#createOorg").val();
+                    var item = $("#outline-"+ this.createTotalOutline + "-item").val();
+                    var qoro = $("#outline-"+ this.createTotalOutline + "-num").val();
+                    var orun = $("#outline-"+ this.createTotalOutline + "-unit").val();
+                    var lsel = $("#outline-"+ this.createTotalOutline + "-lsel").val();
+                    var clot = $("#outline-"+ this.createTotalOutline + "-pici").val();
+                    var serl = $("#outline-"+ this.createTotalOutline + "-xl").val();
+                    console.log(item,qoro,orun,lsel,clot,serl);
+                    $.showPreloader('正在保存行...');
+                    if(localStorage.getItem("asyn")!=null){
+                        $.showPreloader('正在保存到本地...');
+                        var line={"asynid":this.asynflag,"oorg":oorg,"item":item,"lsel":lsel,"qoro":qoro,"orun":orun,"clot":clot,"serl":serl,"companyNo":this.companyNo,"userid":this.userid};
+                        var lines=new Array;
+                        if(localStorage.getItem("lines")!=null){
+                            lines=JSON.parse(localStorage.getItem("lines"))
+                        }
+                        lines.push(line);
+                        localStorage.setItem("lines",JSON.stringify(lines))
+                        $.hidePreloader();
+                        this.createState = 1;
+                        $.toast("保存成功");
+                    }else{
+                            this.$http.get(this.getCreateoutlineInfo,{
+                                params : {
+                                    oorg : oorg,
+                                    orno : this.orno,
+                                    oset : this.oset,
+                                    item : item,
+                                    qoro : qoro,
+                                    orun : orun,
+                                    lsel : lsel,
+                                    clot : clot,
+                                    serl : serl,
+                                    companyNo : this.companyNo,
+                                    userid : this.userid
+                                }
+                            }).then(function (res) {
+                                console.log(res)
+                                var data =eval("("+res.body+")");
+                                if(data.code==1||data.code==2){
+                                    $("#outline-"+ this.createTotalOutline + "-item").attr('readonly',true);
+                                    $("#outline-"+ this.createTotalOutline + "-num").attr('readonly',true);
+                                    $("#outline-"+ this.createTotalOutline + "-unit").attr('readonly',true);
+                                    $("#outline-"+ this.createTotalOutline + "-lsel").attr("disabled","disabled");
+                                    $("#outline-"+ this.createTotalOutline + "-pici").attr("disabled","disabled");
+                                    $("#outline-"+ this.createTotalOutline + "-xl").attr('readonly',true);
+                                    if(data.code==2){
+                                        $.toast("保存成功！但库存不足！");
+                                        $("#outline-"+ this.createTotalOutline + "-pono").val("请在库存管理查看！");
+                                    }else if(data.code==1){
+                                        $.toast("保存成功！")
+                                        $("#outline-"+ this.createTotalOutline + "-pono").val(data.data.pono);
+                                    }
+                                    this.createState = 1;
+                                    $.hidePreloader();
+                                }
+                            },function (res) {
+                                console.log(res)
+                                $.toast("保存失败,未知错误！")
+                            })
+                    }
+                },
+                /***************************************************************/
+                //加载系列
+                loadSelectItem : function(){
+                    this.companyNo=userData.data.user.companyNo;
+                    this.userid=userData.data.user.id;
+                    //加载系列下拉选项
+                    vm.getSeries();
+                    vm.getType();
+                    vm.getWorkCenter();
+                },
+                //获取系列
+                getSeries: function(){
+                    //加载系列下拉选项
+                    this.$http.get(this.getSeriURL,{
+                            params:{
+                                companyNo:vm.companyNo
+                            }
+                        }).then(
+                        function(response){
+                            var series = eval("("+response.body+")");
+                            if(series.code == 1){
+                                vm.createSeri=series.data.Series;
+                            }
+                        },function(response){
+
+                        });
+                },
+                //获取仓单类型
+                getType: function(){
+                    this.$http.get(this.getOtypURL,{
+                        params :{
+                            ittp : 2,
+                            companyNo : this.companyNo,
+                        }
+                        })
+                        .then(function(response){
+                            var type = eval("("+response.body+")");
+                            if(type.code == 1){
+                                vm.createOType = type.data.Type;
+                            }
+                        },function(response){
+
+                        });
+                },
+                getWorkCenter: function(){
+                    this.$http.get(this.getStcoURL,{
+                            params :{
+                                companyNo : this.companyNo,
+                            }
+                        })
+                        .then(function(response){
+                            var centers = eval("("+response.body+")");
+                            if(centers.code == 1){
+                                vm.createWorkCenter = centers.data.ErpWorkCenter;
+                            }
+                        },function(response){
+
+                        });
+                },
+                textss :function () {
+                    $("#ck-kw-text")[0].focus();
+                },
+                ckKeyup : function (event) {
+                    if(event.keyCode == 13) {
+                        console.log("库位回车");
+                        console.log($("#ck-kw-text").val());
+                        var codeKW = $("#ck-kw-text").val();
+                        if (codeKW.indexOf("loca:") >= 0) {
+                            $("#ck-kw-text").val(codeKW.substring(codeKW.indexOf("cwar:") + 5, codeKW.indexOf("loca:")));
+                            $("#kw-text").val(codeKW.substring(codeKW.indexOf("loca:") + 5));
+                        }else {
+                            $.toast("条码信息不符！")
+                        }
+                    }
+                },
+                clearAll: function () {
+                    console.log("清空数据")
+                    $("#ck-kw-text").val("");
+                    $("#kw-text").val("");
+                    $("#orno-text").val("")
+                    this.orno="";
+                    this.oset ="";
+                    for(i=1;i<=this.createTotalOutline;i++){
+                        $('#outline-' + i).remove();
+                    }
+                    this.createTotalOutline = 0;
+                    this.createState = 0;
+                },
+                exit:function () {
+                    localStorage.clear();
+                    window.location.href="login.html";
+                },
+            }
+        })
+        vm.loadSelectItem();
+        function wlKeyup() {
+            var e = window.event;
+            var code = e.keyCode || e.which || e.charCode;
+            if(code == 13){
+                var codeKW = $("#outline-"+ vm.createTotalOutline + "-item").val();
+                if (codeKW.indexOf("item:") >= 0) {
+                    var cwar = codeKW.substring(codeKW.indexOf("cwar:") + 5, codeKW.indexOf("item:"));
+                    var item = codeKW.substring(codeKW.indexOf("item:") + 5);
+                    $("#outline-" + vm.createTotalOutline + "-item").val(item);
+                    vm.$http.get(vm.getItemInfoURL, {
+                        params: {
+                            cwar: cwar,
+                            item: item,
+                            companyNo: vm.companyNo,
+                        }
+                    }).then(function (res) {
+                        console.log(res)
+                        var data = eval("(" + res.body + ")");
+                        if (data.code == 1 && data.data.Item.length>0) {
+                            $("#outline-" + vm.createTotalOutline + "-itemIntro").val(data.data.Item[0].dsca);
+                            $("#outline-" + vm.createTotalOutline + "-unit").val(data.data.Unit.code);
+                            $("#outline-" + vm.createTotalOutline + "-xl").val(data.data.SerialNumber[0].code);
+                        } else {
+                            $.toast("获取物料资料出错！")
+                        }
+                    })
+                }else {
+                    $.toast("条码信息不符！")
+                }
+            }
+        }
+       function goBack(){
+           window.location.href="index.html";
+//            window.history.back();
+        }
+       function downKw(){
+           //jsbridge
+            document.getElementById("jsbridge").click();
+           // $("#ck-kw-text").click;
+             }
+       function piciShow(pag) {
+            if( $("#outline-" + pag + "-lsel").val()=="specific"){
+                $("#outline-" + pag + "-picili").show();
+                console.log(vm.getBatchURL)
+                console.log( $("#ck-kw-text").val())
+                console.log($("#kw-text").val())
+                console.log($("#outline-" + pag + "-item").val())
+                vm.$http.get(vm.getBatchURL,{
+                    params:{
+                        cwar : $("#ck-kw-text").val(),
+                        loca : $("#kw-text").val(),
+                        item : $("#outline-" + pag + "-item").val(),
+                        companyNo : vm.companyNo,
+                    },
+                }).then(
+                    function(response){
+                        console.log(response)
+                        var batchs = eval("("+response.body+")");
+                        if(batchs.code == 1){
+                            var opici= "";
+                            for(i=0;i<batchs.data.Batch.length;i++){
+                                opici =opici +'<option id="outline-' + pag + '-pici-'+i+'" value="'+batchs.data.Batch[i].code+'">'+batchs.data.Batch[i].code+'('+batchs.data.Batch[i].dsca+')</option>';
+                            }
+                        }
+                    },function(response){
+
+                    });
+            }else{
+                $("#outline-" + pag + "-picili").hide();
+            }
+        }
+    </script>
+    <script>
+        $(function(){
+                FlKwQrcode.init($('[node-type=scan-kw-btn]'));
+        });
+        (function($) {
+//            发料库位
+            var FlKwQrcode = function(tempBtn) {
+                var _this_ = this;
+                var isWeiboWebView = /__weibo__/.test(navigator.userAgent);
+                if (isWeiboWebView) {
+                    if (window.WeiboJSBridge) {
+                        _this_.bridgeReady(tempBtn);
+                    } else {
+                        document.addEventListener('WeiboJSBridgeReady', function() {
+                            _this_.bridgeReady(tempBtn);
+                        });
+                    }
+                } else {
+                    _this_.nativeReady(tempBtn);
+                }
+            };
+            FlKwQrcode.prototype = {
+                nativeReady: function(tempBtn) {
+                    $('[node-type=jsbridge]',tempBtn).on('click',function(e){
+                        e.stopPropagation();
+                    });
+                    $(tempBtn).bind('click',function(e){
+                        $(this).find('input[node-type=jsbridge]').trigger('click');
+                    });
+                    $(tempBtn).bind('change', this.getImgFile);
+                },
+                bridgeReady: function(tempBtn) {
+                    $(tempBtn).bind('click', this.weiBoBridge);
+                },
+                weiBoBridge: function() {
+                    window.WeiboJSBridge.invoke('scanQRCode', null, function(params) {
+                        //weibo
+                        //得到扫码的结果
+                        var codeKW = data;
+                        if (codeKW.indexOf("loca:") >= 0) {
+                            $("#ck-kw-text").val(codeKW.substring(codeKW.indexOf("cwar:") + 5, codeKW.indexOf("loca:")));
+                            $("#kw-text").val(codeKW.substring(codeKW.indexOf("loca:") + 5));
+                        }else if(codeKW.indexOf("item:") >= 0){
+                            var cwar=codeKW.substring(codeKW.indexOf("cwar:") + 5, codeKW.indexOf("item:"));
+                            var item =codeKW.substring(codeKW.indexOf("item:") + 5);
+                            $("#outline-"+ vm.createTotalOutline + "-item").val(item);
+                            this.$http.get(vm.getItemInfoURL,{
+                                params :{
+                                    cwar : cwar ,
+                                    item : item,
+                                    companyNo : vm.companyNo,
+                                }
+                            }).then(function (res) {
+                                console.log(res)
+                                var data = eval("("+res.body+")");
+                                if(data.code==1 && data.data.Item.length>0){
+                                    $("#outline-"+ this.createTotalOutline + "-itemIntro").val(data.data.Item[0].dsca);
+                                    $("#outline-"+ this.createTotalOutline + "-unit").val(data.data.Unit.code);
+                                    $("#outline-"+ this.createTotalOutline + "-xl").val(data.data.SerialNumber[0].code);
+                                }else{
+                                    $.toast("获取物料资料出错！")
+                                }
+                            })
+                        }else{
+                            $.toast("条码未识别，请重试！");
+                        }
+                    });
+                },
+                getImgFile: function() {
+                    $.showPreloader('正在解析...');
+                    var _this_ = this;
+                    var inputDom = $(this).find('input[node-type=jsbridge]');
+                    var imgFile = inputDom[0].files;
+                    var oFile = imgFile[0];
+                    var oFReader = new FileReader();
+                    var rFilter = /^(?:image\/bmp|image\/cis\-cod|image\/gif|image\/ief|image\/jpeg|image\/jpeg|image\/jpeg|image\/pipeg|image\/png|image\/svg\+xml|image\/tiff|image\/x\-cmu\-raster|image\/x\-cmx|image\/x\-icon|image\/x\-portable\-anymap|image\/x\-portable\-bitmap|image\/x\-portable\-graymap|image\/x\-portable\-pixmap|image\/x\-rgb|image\/x\-xbitmap|image\/x\-xpixmap|image\/x\-xwindowdump)$/i;
+
+                    if (imgFile.length === 0) {
+                        return;
+                    }
+
+                    if (!rFilter.test(oFile.type)) {
+                        $.toast("选择正确的图片格式！");
+                        return;
+                    }
+
+                    oFReader.onload = function(oFREvent) {
+                        qrcode.decode(oFREvent.target.result);
+                        qrcode.callback = function(data) {
+                            //得到扫码的结果
+                            console.log(data)
+                            var codeKW = data;
+                            if (codeKW.indexOf("loca:") >= 0) {
+                                $.hidePreloader();
+                                $("#ck-kw-text").val(codeKW.substring(codeKW.indexOf("cwar:") + 5, codeKW.indexOf("loca:")));
+                                $("#kw-text").val(codeKW.substring(codeKW.indexOf("loca:") + 5));
+                            }else if(codeKW.indexOf("item:") >= 0){
+                                var cwar=codeKW.substring(codeKW.indexOf("cwar:") + 5, codeKW.indexOf("item:"));
+                                var item =codeKW.substring(codeKW.indexOf("item:") + 5);
+                                $("#outline-"+ vm.createTotalOutline + "-item").val(item);
+                                vm.$http.get(vm.getItemInfoURL,{
+                                    params :{
+                                        cwar : cwar ,
+                                        item : item,
+                                        companyNo : vm.companyNo,
+                                    }
+                                }).then(function (res) {
+                                    $.hidePreloader();
+                                    console.log(res)
+                                    var data = eval("("+res.body+")");
+                                    if(data.code==1&& data.data.Item.length>0){
+                                        $("#outline-"+ this.createTotalOutline + "-itemIntro").val(data.data.Item[0].dsca);
+                                        $("#outline-"+ this.createTotalOutline + "-unit").val(data.data.Unit.code);
+                                        if(data.data.SerialNumber.length>0){
+                                            $("#outline-"+ this.createTotalOutline + "-xl").val(data.data.SerialNumber[0].code);
+                                        }
+                                        $("#outline-"+ this.createTotalOutline + "-num")[0].focus();
+                                    }else{
+                                        $.toast("获取物料资料出错！")
+                                    }
+                                },function (res) {
+                                    $.hidePreloader();
+                                    $.toast("获取物料资料出错！")
+                                })
+                            }else{
+                                $.hidePreloader();
+                                $.toast("条码未识别，请重试！");
+                            }
+                            var file = document.getElementById("jsbridge");
+                            file.value = "";
+                        };
+
+                    };
+
+                    oFReader.readAsDataURL(oFile);
+                },
+                destory: function() {
+                    $(tempBtn).off('click');
+                }
+            };
+            FlKwQrcode.init = function(tempBtn) {
+                var _this_ = this;
+                tempBtn.each(function() {
+                    new _this_($(this));
+                });
+            };
+            window.FlKwQrcode = FlKwQrcode;
+        })(window.Zepto ? Zepto : jQuery);
+    </script>
+</body>
+</html>

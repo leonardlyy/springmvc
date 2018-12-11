@@ -1,0 +1,7 @@
+INDEX VERSION 1.4+D:\nws-production\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+2805544601.index
+179652036.index
+104363951.index
+1270434553.index
+2951477113.index
+667170017.index

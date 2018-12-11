@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.promapper.IssueRecordLineMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.IssueRecordLine">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="method" property="method" jdbcType="VARCHAR" />
+		<result column="userid" property="userid" jdbcType="INTEGER" />
+		<result column="oorg" property="oorg" jdbcType="VARCHAR" />
+		<result column="orno" property="orno" jdbcType="VARCHAR" />
+		<result column="oset" property="oset" jdbcType="INTEGER" />
+		<result column="pono" property="pono" jdbcType="VARCHAR" />
+		<result column="item" property="item" jdbcType="VARCHAR" />
+		<result column="dsca" property="dsca" jdbcType="VARCHAR" />
+		<result column="qoro" property="qoro" jdbcType="VARCHAR" />
+		<result column="orun" property="orun" jdbcType="VARCHAR" />
+		<result column="lsel" property="lsel" jdbcType="VARCHAR" />
+		<result column="clot" property="clot" jdbcType="VARCHAR" />
+		<result column="serl" property="serl" jdbcType="VARCHAR" />
+		<result column="create_date" property="createDate"
+			jdbcType="TIMESTAMP" />
+		<result column="modify_date" property="modifyDate"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, method, userid, oorg, orno, oset, pono, item, dsca, qoro, orun, lsel,
+		clot, serl,
+		companyNo,status,create_date, modify_date
+	</sql>
+	<select id="listByPage"
+		parameterType="com.lewei.production.util.Pagination"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from issue_record_line ORDER BY id DESC
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from issue_record_line
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey"
+		parameterType="java.lang.Integer">
+		delete from issue_record_line
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insertSelective"
+		parameterType="com.lewei.production.model.IssueRecordLine">
+		insert into issue_record_line
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="method != null">
+				method,
+			</if>
+			<if test="userid != null">
+				userid,
+			</if>
+			<if test="oorg != null">
+				oorg,
+			</if>
+			<if test="orno != null">
+				orno,
+			</if>
+			<if test="oset != null">
+				oset,
+			</if>
+			<if test="pono != null">
+				pono,
+			</if>
+			<if test="item != null">
+				item,
+			</if>
+			<if test="dsca != null">
+				dsca,
+			</if>
+			<if test="qoro != null">
+				qoro,
+			</if>
+			<if test="orun != null">
+				orun,
+			</if>
+			<if test="lsel != null">
+				lsel,
+			</if>
+			<if test="clot != null">
+				clot,
+			</if>
+			<if test="serl != null">
+				serl,
+			</if>
+			<if test="companyNo != null">
+				companyNo,
+			</if>
+
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createDate != null">
+				create_date,
+			</if>
+			<if test="modifyDate != null">
+				modify_date,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="method != null">
+				#{method,jdbcType=VARCHAR},
+			</if>
+			<if test="userid != null">
+				#{userid,jdbcType=INTEGER},
+			</if>
+			<if test="oorg != null">
+				#{oorg,jdbcType=VARCHAR},
+			</if>
+			<if test="orno != null">
+				#{orno,jdbcType=VARCHAR},
+			</if>
+			<if test="oset != null">
+				#{oset,jdbcType=INTEGER},
+			</if>
+			<if test="pono != null">
+				#{pono,jdbcType=VARCHAR},
+			</if>
+			<if test="item != null">
+				#{item,jdbcType=VARCHAR},
+			</if>
+			<if test="dsca != null">
+				#{dsca,jdbcType=VARCHAR},
+			</if>
+			<if test="qoro != null">
+				#{qoro,jdbcType=VARCHAR},
+			</if>
+			<if test="orun != null">
+				#{orun,jdbcType=VARCHAR},
+			</if>
+			<if test="lsel != null">
+				#{lsel,jdbcType=VARCHAR},
+			</if>
+			<if test="clot != null">
+				#{clot,jdbcType=VARCHAR},
+			</if>
+			<if test="serl != null">
+				#{serl,jdbcType=VARCHAR},
+			</if>
+			<if test="companyNo != null">
+				#{companyNo,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="createDate != null">
+				#{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyDate != null">
+				#{modifyDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.lewei.production.model.IssueRecordLine">
+		update issue_record_line
+		<set>
+			<if test="method != null">
+				method = #{method,jdbcType=VARCHAR},
+			</if>
+			<if test="userid != null">
+				userid = #{userid,jdbcType=INTEGER},
+			</if>
+			<if test="oorg != null">
+				oorg = #{oorg,jdbcType=VARCHAR},
+			</if>
+			<if test="orno != null">
+				orno = #{orno,jdbcType=VARCHAR},
+			</if>
+			<if test="oset != null">
+				oset = #{oset,jdbcType=INTEGER},
+			</if>
+			<if test="pono != null">
+				pono = #{pono,jdbcType=VARCHAR},
+			</if>
+			<if test="item != null">
+				item = #{item,jdbcType=VARCHAR},
+			</if>
+			<if test="dsca != null">
+				dsca = #{dsca,jdbcType=VARCHAR},
+			</if>
+			<if test="qoro != null">
+				qoro = #{qoro,jdbcType=VARCHAR},
+			</if>
+			<if test="orun != null">
+				orun = #{orun,jdbcType=VARCHAR},
+			</if>
+			<if test="lsel != null">
+				lsel = #{lsel,jdbcType=VARCHAR},
+			</if>
+			<if test="clot != null">
+				clot = #{clot,jdbcType=VARCHAR},
+			</if>
+			<if test="serl != null">
+				serl = #{serl,jdbcType=VARCHAR},
+			</if>
+			<if test="createDate != null">
+				create_date = #{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyDate != null">
+				modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey"
+		parameterType="com.lewei.production.model.IssueRecordLine">
+		update issue_record_line
+		set method = #{method,jdbcType=VARCHAR},
+		userid = #{userid,jdbcType=INTEGER},
+		oorg = #{oorg,jdbcType=VARCHAR},
+		orno = #{orno,jdbcType=VARCHAR},
+		oset = #{oset,jdbcType=INTEGER},
+		pono = #{pono,jdbcType=VARCHAR},
+		item = #{item,jdbcType=VARCHAR},
+		dsca = #{dsca,jdbcType=VARCHAR},
+		qoro = #{qoro,jdbcType=VARCHAR},
+		orun = #{orun,jdbcType=VARCHAR},
+		lsel = #{lsel,jdbcType=VARCHAR},
+		clot = #{clot,jdbcType=VARCHAR},
+		serl = #{serl,jdbcType=VARCHAR},
+		create_date = #{createDate,jdbcType=TIMESTAMP},
+		modify_date = #{modifyDate,jdbcType=TIMESTAMP}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

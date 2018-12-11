@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.promapper.UserMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.User">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="dutyid" property="dutyid" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="username" property="username"
+			jdbcType="VARCHAR" />
+		<result column="password" property="password"
+			jdbcType="VARCHAR" />
+		<result column="tel" property="tel" jdbcType="VARCHAR" />
+		<result column="email" property="email" jdbcType="VARCHAR" />
+		<result column="companyNo" property="companyNo"
+			jdbcType="VARCHAR" />
+		<result column="warehouseNo" property="warehouseNo"
+			jdbcType="VARCHAR" />
+		<result column="warehouseNo1" property="warehouseNo1"
+			jdbcType="VARCHAR" />
+		<result column="seri" property="seri" jdbcType="VARCHAR" />
+		<result column="seriN" property="seriN" jdbcType="VARCHAR" />
+		<result column="otyp" property="otyp" jdbcType="VARCHAR" />
+		<result column="len" property="len" jdbcType="VARCHAR" />
+		<result column="defaultprinter" property="defaultprinter"
+			jdbcType="VARCHAR" />
+		<result column="lastvisitDate" property="lastvisitdate"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap id="relevanceResultMap"
+		type="com.lewei.production.model.User" extends="BaseResultMap">
+		<association property="userDuty"
+			javaType="com.lewei.production.model.UserDuty">
+			<result column="dutyname" property="dutyname"
+				jdbcType="VARCHAR" />
+			<result column="remark" property="remark" jdbcType="VARCHAR" />
+		</association>
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, dutyid, name, username, password,tel ,email, companyNo, warehouseNo ,
+		warehouseNo1, seri,seriN, otyp, len, defaultprinter, lastvisitDate,
+		create_date,
+		modify_date
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_user
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="selectDutyId" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_user
+		where dutyid = #{id,jdbcType=INTEGER}
+	</select>
+
+	<select id="login" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.User">
+		select
+		<include refid="Base_Column_List" />
+		from t_user
+		where username = #{username,jdbcType=VARCHAR}
+		and password = #{password,jdbcType=VARCHAR}
+		AND status = 1
+	</select>
+
+	<select id="selectAllPage" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.util.Pagination">
+		select
+		name, username
+		from t_user
+		<where>
+			<if test="params.name != null">
+				AND name= #{params.name,jdbcType=VARCHAR}
+			</if>
+			<if test="params.username != null">
+				AND username= #{params.username,jdbcType=VARCHAR}
+			</if>
+			<if test="params.dutyid != null">
+				AND dutyid= #{params.dutyid,jdbcType=INTEGER}
+			</if>
+			<if test="params.companyNo != null">
+				AND companyNo= #{params.companyNo,jdbcType=VARCHAR}
+			</if>
+			<if test="params.warehouseNo != null">
+				AND warehouseNo= #{params.warehouseNo,jdbcType=VARCHAR}
+			</if>
+			<if test="params.warehouseNo1 != null">
+				AND warehouseNo1= #{params.warehouseNo1,jdbcType=VARCHAR}
+			</if>
+			AND status = 1
+		</where>
+
+	</select>
+
+	<select id="selectUserName" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from t_user
+		where username = #{username,jdbcType=VARCHAR}
+		AND status = 1
+	</select>
+
+	<delete id="deleteByPrimaryKey"
+		parameterType="java.lang.Integer">
+		delete from t_user
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+
+	<insert id="insertSelective"
+		parameterType="com.lewei.production.model.User">
+		insert into t_user
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="dutyid != null">
+				dutyid,
+			</if>
+			<if test="name != null">
+				name,
+			</if>
+			<if test="username != null">
+				username,
+			</if>
+			<if test="password != null">
+				password,
+			</if>
+			<if test="tel != null">
+				tel,
+			</if>
+			<if test="email != null">
+				email,
+			</if>
+			<if test="companyNo != null">
+				companyNo,
+			</if>
+			<if test="seri != null">
+				seri,
+			</if>
+			<if test="seriN != null">
+				seriN,
+			</if>
+			<if test="otyp != null">
+				otyp,
+			</if>
+			<if test="warehouseNo != null">
+				warehouseNo,
+			</if>
+			<if test="warehouseNo1 != null">
+				warehouseNo1,
+			</if>
+			<if test="len != null">
+				len,
+			</if>
+			<if test="defaultprinter != null">
+				defaultprinter,
+			</if>
+			<if test="lastvisitdate != null">
+				lastvisitDate,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="createDate != null">
+				create_date,
+			</if>
+			<if test="modifyDate != null">
+				modify_date,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="dutyid != null">
+				#{dutyid,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				#{name,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				#{username,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				#{password,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				#{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				#{email,jdbcType=VARCHAR},
+			</if>
+			<if test="companyNo != null">
+				#{companyNo,jdbcType=VARCHAR},
+			</if>
+			<if test="seri != null">
+				#{seri,jdbcType=VARCHAR},
+			</if>
+			<if test="seriN != null">
+				#{seriN,jdbcType=VARCHAR},
+			</if>
+			<if test="otyp != null">
+				#{otyp,jdbcType=VARCHAR},
+			</if>
+			<if test="warehouseNo != null">
+				#{warehouseNo,jdbcType=VARCHAR},
+			</if>
+			<if test="warehouseNo1 != null">
+				#{warehouseNo1,jdbcType=VARCHAR},
+			</if>
+			<if test="len != null">
+				#{len,jdbcType=VARCHAR},
+			</if>
+			<if test="defaultprinter != null">
+				#{defaultprinter,jdbcType=VARCHAR},
+			</if>
+			<if test="lastvisitdate != null">
+				#{lastvisitdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=VARCHAR},
+			</if>
+			<if test="createDate != null">
+				#{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyDate != null">
+				#{modifyDate,jdbcType=TIMESTAMP},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective"
+		parameterType="com.lewei.production.model.User">
+		update t_user
+		<set>
+			<if test="dutyid != null">
+				dutyid = #{dutyid,jdbcType=INTEGER},
+			</if>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="username != null">
+				username = #{username,jdbcType=VARCHAR},
+			</if>
+			<if test="password != null">
+				password = #{password,jdbcType=VARCHAR},
+			</if>
+			<if test="tel != null">
+				tel = #{tel,jdbcType=VARCHAR},
+			</if>
+			<if test="email != null">
+				email = #{email,jdbcType=VARCHAR},
+			</if>
+			<if test="companyNo != null">
+				companyNo= #{companyNo,jdbcType=VARCHAR},
+			</if>
+			<if test="seri != null">
+				seri= #{seri,jdbcType=VARCHAR},
+			</if>
+			<if test="seriN != null">
+				seriN= #{seriN,jdbcType=VARCHAR},
+			</if>
+			<if test="otyp != null">
+				otyp=#{otyp,jdbcType=VARCHAR},
+			</if>
+			<if test="warehouseNo != null">
+				warehouseNo = #{warehouseNo,jdbcType=VARCHAR},
+			</if>
+			<if test="warehouseNo1 != null">
+				warehouseNo1 = #{warehouseNo1,jdbcType=VARCHAR},
+			</if>
+			<if test="len != null">
+				len = #{len,jdbcType=VARCHAR},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="defaultprinter != null">
+				defaultprinter = #{defaultprinter,jdbcType=VARCHAR},
+			</if>
+			<if test="lastvisitdate != null">
+				lastvisitDate = #{lastvisitdate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="createDate != null">
+				create_date = #{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="modifyDate != null">
+				modify_date = #{modifyDate,jdbcType=TIMESTAMP},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

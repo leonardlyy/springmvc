@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>条码扫描系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" /> <meta http-equiv="Expires" content="0" /> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/sm.min.css">
+</head>
+<body >
+    <div class="page-group" id="login-page">
+        <div class="page page-current" id="index-page" @keyup="loginKeyup($event)" >
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li >
+                            <div class="item-content" >
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak >{{username_len}}</div>
+                                    <div class="item-input"  >
+                                        <input id="usernameId" type="text"  v-model="username" placeholder="User Name">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label" v-cloak>{{password_len}}</div>
+                                    <div class="item-input">
+                                        <input id = "pass" type="password" v-model="password" placeholder="Password">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-100"><a href="#" @click="btnLogin" class="button button-big button-fill button-success">登录(login)</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>-->
+    <!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>-->
+    <script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/vue-resource.min.js"></script>
+    <script src="js/constant.js"></script>
+    <!--<script type="text/javascript" src="js/vue-resource.min.js" charset="utf-8"></script>-->
+    <script>
+        $.init();
+        var httpURL = locaUrl + "user/login";
+        var lg = new Vue({
+            el:'#login-page',
+            data:{
+                username_len:'用户(User) ',
+                password_len:'密码(Password)',
+                username:'',
+                password:''
+            },
+            methods:{
+                userJudge:function () {
+
+                    $("#usernameId")[0].focus();
+                },
+                btnLogin : function ()  {
+                   if (this.username!=''&&this.password!=''){
+                      // this.$http.get(httpURL + "?username=" + this.username +"&password="+this.password)
+
+                       $.get(httpURL,
+                           {username : this.username,
+                            password : this.password
+                           },function (response) {
+                           var user = JSON.parse(response);
+//                               console.log(response)
+                           if(user.code==1)
+                           {
+                               localStorage.setItem('user',response)
+                               window.location.href='index.html'
+                           }else{
+                               $.toast(user.message);
+                           }
+                       })
+//                       vm.$http.get(httpURL ,{
+//                           params : {
+//                               username : this.username,
+//                               password : this.password
+//                           },
+//                       }).then(function(response){
+//                               var user = eval("("+response.body+")");
+////                               console.log(response)
+//                           $.toast("登录反馈"+user.code);
+//                               if(user.code==1)
+//                               {
+//                                   localStorage.setItem('user',response.body)
+//                                   $.toast("存储信息");
+//                                      window.location.href='index.html'
+//                               }else{
+//                                   $.toast(user.message);
+//                               }
+//
+//                           },function (response) {
+//
+//                           });
+                   }else if(this.username==''){
+                       $.toast('用户名不能为空');
+                   }else{
+                       $.toast('密码不能为空');
+                   }
+
+                 },
+                loginKeyup : function (event) {
+                    if(event.keyCode == 13) {
+                        this.btnLogin();
+                    }
+                },
+            }
+
+        });
+        lg.userJudge();
+    </script>
+</body>
+</html>

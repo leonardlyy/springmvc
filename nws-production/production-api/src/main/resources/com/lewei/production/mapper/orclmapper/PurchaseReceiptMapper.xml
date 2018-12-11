@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.orclmapper.PurchaseReceiptMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.ErpPurchaseOrdeLine">
+		<result column="t$orno" property="orno" jdbcType="VARCHAR" />
+		<result column="t$pono" property="pono" jdbcType="INTEGER" />
+		<result column="t$ponb" property="ponb" jdbcType="INTEGER" />
+		<result column="t$item" property="item" jdbcType="VARCHAR" />
+		<result column="T$dsca" property="dsca" jdbcType="VARCHAR" />
+		<result column="t$cuni" property="cuni" jdbcType="VARCHAR" />
+		<result column="t$bpid" property="bpid" jdbcType="VARCHAR" />
+		<result column="t$qana" property="qana" jdbcType="DOUBLE" />
+		<result column="t$qidl" property="qidl" jdbcType="DOUBLE" />
+		<result column="t$cwar" property="cwar" jdbcType="VARCHAR" />
+		<result column="cwardsca" property="cwardsca"
+			jdbcType="VARCHAR" />
+		<result column="t$ltct" property="ltct" jdbcType="INTEGER" />
+		<result column="t$sloc" property="sloc" jdbcType="INTEGER" />
+		<result column="t$nama" property="bpidname" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="BaseResultMap12"
+		type="com.lewei.production.model.ErpPurchaseOrdeLine">
+		<result column="t$orno" property="orno" jdbcType="VARCHAR" />
+		<result column="t$pono" property="pono" jdbcType="INTEGER" />
+		<result column="t$ponb" property="ponb" jdbcType="INTEGER" />
+		<result column="t$item" property="item" jdbcType="VARCHAR" />
+		<result column="T$dsca" property="dsca" jdbcType="VARCHAR" />
+		<result column="t$cuni" property="cuni" jdbcType="VARCHAR" />
+		<result column="t$bpid" property="bpid" jdbcType="VARCHAR" />
+		<result column="t$qana" property="qana" jdbcType="DOUBLE" />
+		<result column="t$qidl" property="qidl" jdbcType="DOUBLE" />
+		<result column="t$cwar" property="cwar" jdbcType="VARCHAR" />
+		<result column="cwardsca" property="cwardsca"
+			jdbcType="VARCHAR" />
+		<result column="t$ltct" property="ltct" jdbcType="INTEGER" />
+		<result column="t$sloc" property="sloc" jdbcType="INTEGER" />
+		<result column="t$nama" property="bpidname" jdbcType="VARCHAR" />
+	</resultMap>
+	<select id="getItemListByOrderNO" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select T$orno,t$pono,t$ponb ,a.t$bpid ,a.t$item,b.t$dsca
+		,a.t$cuni,a.t$cwar,c.t$dsca cwardsca
+		,a.t$qana -(SELECT nvl(sum(t$qoor),0) FROM BAAN.TWHINR931600 where t$orno = a
+		.t$orno and t$pono = a.t$pono and t$ponb = a.t$ponb and t$stat in
+		(0,2) ) t$qana
+		,b.t$ltct,d.t$sloc,e.t$nama
+		from baan.twhinp100${companyNo} a
+		inner join baan.ttcibd001${companyNo} b on a.t$item =b.t$item
+		inner join baan.ttcmcs003${companyNo} c on c.t$cwar = a.t$cwar
+		inner join baan.twhwmd200${companyNo} d on d.t$cwar = a.t$cwar
+		inner join baan.ttccom100${companyNo} e on e.t$bpid = a.t$bpid
+		<where>
+			t$kotr =1 and t$koor =2 and t$orno = #{if1,jdbcType=VARCHAR}
+			AND a.t$qana -(SELECT nvl(sum(t$qoor),0) FROM BAAN.TWHINR931${companyNo}
+			where t$orno = a .t$orno and t$pono = a.t$pono and t$ponb = a.t$ponb
+			and t$stat in (0,2) ) >0
+		</where>
+	</select>
+	<insert id="insretWarehouseReceipt"
+		parameterType="com.lewei.production.model.ErpWarehouseReceipt">
+		insert into baan.twhinr931${companyNo}
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="orno != null">
+				t$orno,
+			</if>
+			<if test="pono != null">
+				t$pono,
+			</if>
+			<if test="ponb != null">
+				t$ponb,
+			</if>
+			<if test="odat != null">
+				t$odat,
+			</if>
+			<if test="item != null">
+				t$item,
+			</if>
+			<if test="qoor != null">
+				t$qoor,
+			</if>
+			<if test="cwar != null">
+				t$cwar,
+			</if>
+			<if test="loca != null">
+				t$loca,
+			</if>
+			<if test="clot != null">
+				t$clot,
+			</if>
+			<if test="refa != null">
+				t$refa,
+			</if>
+			<if test="trdt != null">
+				t$trdt,
+			</if>
+			<if test="seqn != null">
+				t$seqn,
+			</if>
+			<if test="stat != null">
+				t$stat,
+			</if>
+			<if test="error != null">
+				t$error,
+			</if>
+			<if test="whno != null">
+				t$whno,
+			</if>
+			<if test="pnoo != null">
+				t$pnoo,
+			</if>
+			<if test="refc != null">
+				T$REFCNTD,
+			</if>
+			<if test="refu != null">
+				T$REFCNTU,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+
+			<if test="orno != null">
+				#{orno,jdbcType=VARCHAR},
+			</if>
+			<if test="pono != null">
+				#{pono,jdbcType=INTEGER},
+			</if>
+			<if test="ponb != null">
+				#{ponb,jdbcType=INTEGER},
+			</if>
+			<if test="odat != null">
+				#{odat,jdbcType=TIMESTAMP},
+			</if>
+			<if test="item != null">
+				#{item,jdbcType=VARCHAR},
+			</if>
+			<if test="qoor != null">
+				#{qoor,jdbcType=VARCHAR},
+			</if>
+			<if test="cwar != null">
+				#{cwar,jdbcType=VARCHAR},
+			</if>
+			<if test="loca != null">
+				#{loca,jdbcType=VARCHAR},
+			</if>
+			<if test="clot != null">
+				#{clot,jdbcType=VARCHAR},
+			</if>
+			<if test="refa != null">
+				#{refa,jdbcType=VARCHAR},
+			</if>
+			<if test="trdt != null">
+				#{trdt,jdbcType=TIMESTAMP},
+			</if>
+			BAAN.GET_WHINR931_SEQN_${companyNo} (#{orno,jdbcType=INTEGER},
+			#{pono,jdbcType=INTEGER}, #{ponb,jdbcType=INTEGER} ),
+			<if test="stat != null">
+				#{stat,jdbcType=INTEGER},
+			</if>
+			<if test="error != null">
+				#{error,jdbcType=VARCHAR},
+			</if>
+			<if test="whno != null">
+				#{whno,jdbcType=VARCHAR},
+			</if>
+			<if test="pnoo != null">
+				#{pnoo,jdbcType=INTEGER},
+			</if>
+			<if test="refc != null">
+				#{refc,jdbcType=INTEGER},
+			</if>
+			<if test="refu != null">
+				#{refu,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+</mapper>

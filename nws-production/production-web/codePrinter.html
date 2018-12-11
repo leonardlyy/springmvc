@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>条码打印</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/sm.min.css">
+    <style>
+        .content-item{
+            height: 33%;
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+        .item{
+            width:25%;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align:center;
+            vertical-align:middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .item-label{
+            display:block;
+            font-size:.65rem;
+            position:relative;
+            top:.15rem;
+        }
+        .bar button{
+            border:0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+        .bar button img{
+            max-height: 100%;
+        }
+        .bar .icon img{
+            max-height: 10%;
+            max-width: 10%;
+        }
+        .content-padded .searchbar .icon img{
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+        .bar-header-secondary~.content{
+            top: 3rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-group" id="codeprinter-page">
+        <div class="page page-current" id="index-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{barcode_print_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="content-item">
+                    <!--<a class="item" href="#kuwei-page" @click="getKuweiInfo()">-->
+                    <!--<span class="item-icon"><img src="img/kuweidayin.png"></span>-->
+                    <!--<span class="item-label">{{loca_print_len}}</span>-->
+                    <!--</a>-->
+                    <a class="item" href="#wuliao-page" @click="getWuliaoInfo()">
+                        <span class="item-icon"><img src="img/wuliaodayin.png"></span>
+                        <span class="item-label">{{item_print_len}}</span>
+                    </a>
+                    <a class="item" href="#stco-page" @click="getStcoInfo()">
+                        <span class="item-icon"><img src="img/biaoqian.png"></span>
+                        <span class="item-label">{{stco_print_len}}</span>
+                    </a>
+                    <a class="item" href="#clot-page" @click="getWuliaoInfo()">
+                        <span class="item-icon"><img src="img/biaoqian.png"></span>
+                        <span class="item-label">{{clot_print_len}}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!--库位打印页面  -->
+        <div class="page" id="kuwei-page" v-cloak>
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{loca_print_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{printer_len}}</div>
+                                    <div class="item-input">
+                                        <select id="kuwei-dy">
+                                            <option v-for="(value , index) in printerList" v-if="default_printer===value"
+                                                selected="selected" :value="value">{{value}}</option>
+                                            <option v-for="(value , index) in printerList" v-if="default_printer!=value"
+                                                :value="value">{{value}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{warehouse_len}}</div>
+                                    <div class="item-input">
+                                        <select id="kuwei-cw" @change="getKuwei()">
+                                            <option v-for="i in warehouse" :value="i.code" v-if="warehouseNo===i.code"
+                                                selected="selected">{{i.dsca}}({{i.code}})</option>
+                                            <option v-for="i in warehouse" :value="i.code" v-if="warehouseNo!=i.code">{{i.dsca}}({{i.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{loca_len}}</div>
+                                    <div class="item-input">
+                                        <select id="kuwei-kw">
+                                            <option value="0" v-if="chooseKuweiFlag == 0">==={{please_select_warehouse_len}}===</option>
+                                            <option v-for="i in kuwei" :value="i.code">{{i.dsca}}({{i.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{num_len}}</div>
+                                    <div class="item-input">
+                                        <input id="kuwei-num" type="number" min="1" placeholder="1" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-100" @click="printByPage('k')"><a href="#" class="button button-big button-fill button-successs">{{print_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--物料打印页面  -->
+        <div class="page" id="wuliao-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{item_print_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{printer_len}}</div>
+                                    <div class="item-input">
+                                        <select id="wuliao-dy">
+                                            <option v-for="(value , index) in printerList" v-if="default_printer===value"
+                                                selected="selected" :value="value">{{value}}</option>
+                                            <option v-for="(value , index) in printerList" v-if="default_printer!=value"
+                                                :value="value">{{value}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{warehouse_len}}</div>
+                                    <div class="item-input">
+                                        <select id="wuliao-cw" @change="getWuliao('wuliao')">
+                                            <option v-for="i in warehouse" :value="i.code" v-if="warehouseNo===i.code"
+                                                selected="selected">{{i.dsca}}({{i.code}})</option>
+                                            <option v-for="i in warehouse" :value="i.code" v-if="warehouseNo!=i.code">{{i.dsca}}({{i.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{item_len}}</div>
+                                    <div class="item-input">
+                                        <select id="wuliao-item">
+                                            <option value="0" v-if="chooseWuliaoFlag == 0">==={{please_select_warehouse_len}}===</option>
+                                            <option v-for="i in item" :value="i.code">{{i.dsca}}({{i.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{num_len}}</div>
+                                    <div class="item-input">
+                                        <input id="wuliao-num" type="number" min="1" placeholder="1" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-100" @click="printByPage('w')"><a href="#" class="button button-big button-fill button-successs">{{print_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--工作中心打印页面  -->
+        <div class="page" id="stco-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{stco_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{printer_len}}</div>
+                                    <div class="item-input">
+                                        <select id="stco-dy">
+                                            <option v-for="(value , index) in printerList" v-if="default_printer===value"
+                                                selected="selected" :value="value">{{value}}</option>
+                                            <option v-for="(value , index) in printerList" v-if="default_printer!=value"
+                                                :value="value">{{value}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{stco_len}}</div>
+                                    <div class="item-input">
+                                        <select id="stco">
+                                            <option v-for="i in stcolist" :value="i.code">{{i.dsca}}({{i.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{num_len}}</div>
+                                    <div class="item-input">
+                                        <input id="stco-num" type="number" min="1" placeholder="1" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-100" @click="printStco()"><a href="#" class="button button-big button-fill button-successs">{{print_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--批次打印页面  -->
+        <div class="page" id="clot-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{pici_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{printer_len}}</div>
+                                    <div class="item-input">
+                                        <select id="clot-dy">
+                                            <option v-for="(value , index) in printerList" v-if="default_printer===value"
+                                                selected="selected" :value="value">{{value}}</option>
+                                            <option v-for="(value , index) in printerList" v-if="default_printer!=value"
+                                                :value="value">{{value}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{warehouse_len}}</div>
+                                    <div class="item-input">
+                                        <select id="clot-cw" @change="getWuliao('clot')">
+                                            <option v-for="i in warehouse" :value="i.code" v-if="warehouseNo===i.code"
+                                                selected="selected">{{i.dsca}}({{i.code}})</option>
+                                            <option v-for="i in warehouse" :value="i.code" v-if="warehouseNo!=i.code">{{i.dsca}}({{i.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{item_len}}</div>
+                                    <div class="item-input">
+                                        <select id="clot-item" @change="getClotList()">
+                                            <option value="0" v-if="chooseWuliaoFlag == 0">==={{please_select_warehouse_len}}===</option>
+                                            <option v-for="i in item" :value="i.code">{{i.dsca}}({{i.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{pici_len}}</div>
+                                    <div class="item-input">
+                                        <select id="clot">
+                                            <option v-for="s in picilist" :value="s.code">{{s.code}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{num_len}}</div>
+                                    <div class="item-input">
+                                        <input id="clot-num" type="number" min="1" placeholder="1" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-100" @click="printClot()"><a href="#" class="button button-big button-fill button-successs">{{print_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--批次打印页面  -->
+        <div class="page" id="clot-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{pici_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{printer_len}}</div>
+                                    <div class="item-input">
+                                        <select id="clot-dy">
+                                            <option v-for="(value , index) in printerList" v-if="default_printer===value"
+                                                selected="selected" :value="value">{{value}}</option>
+                                            <option v-for="(value , index) in printerList" v-if="default_printer!=value"
+                                                :value="value">{{value}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{warehouse_len}}</div>
+                                    <div class="item-input">
+                                        <select id="clot-cw" @change="getWuliao('clot')">
+                                            <option v-for="i in warehouse" :value="i.code" v-if="warehouseNo===i.code"
+                                                selected="selected">{{i.dsca}}({{i.code}})</option>
+                                            <option v-for="i in warehouse" :value="i.code" v-if="warehouseNo!=i.code">{{i.dsca}}({{i.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{item_len}}</div>
+                                    <div class="item-input">
+                                        <select id="clot-item" @change="getClotList()">
+                                            <option value="0" v-if="chooseWuliaoFlag == 0">==={{please_select_warehouse_len}}===</option>
+                                            <option v-for="i in item" :value="i.code">{{i.dsca}}({{i.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{pici_len}}</div>
+                                    <div class="item-input">
+                                        <select id="clot">
+                                            <option v-for="s in picilist" :value="s.code">{{s.code}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{num_len}}</div>
+                                    <div class="item-input">
+                                        <input id="clot-num" type="number" min="1" placeholder="1" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-100" @click="printClot()"><a href="#" class="button button-big button-fill button-successs">{{print_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>-->
+    <!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>-->
+    <script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/vue-resource.min.js"></script>
+    <script src="js/constant.js"></script>
+    <script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+    <!--<script type="text/javascript" src="js/vue-resource.min.js" charset="utf-8"></script>-->
+    <script>
+        $.init();
+        var user = localStorage.getItem('user');
+        var userData = JSON.parse(user);
+        var httpURL = httpUrl;
+        var locaURL = locaUrl;
+        var vm = new Vue({
+            el: '#codeprinter-page',
+            data: {
+                barcode_print_len: '条码打印',
+                loca_print_len: '库位打印',
+                item_print_len: '物料打印',
+                stco_print_len: '工作中心打印',
+                clot_print_len: '批次打印',
+                printer_len: '打印机',
+                warehouse_len: '仓库',
+                loca_len: '库位',
+                item_len: '物料',
+                num_len: '数量',
+                print_len: '打印',
+                pici_len: '批次',
+                stco_len: '工作中心',
+                default_printer: "",
+                successfully_sent_to_printer: '已成功发送到打印机！',
+                error_sent_to_printer: '打印失败，请检查打印机是否连接！',
+                please_select_warehouse_len: '请选择仓库',
+                no_printer_len: '没有打印机!',
+                system_error_len: '系统错误',
+                not_warehouse: '仓库不存在',
+                input_number_error: '输入数量错误',
+                not_clot_len: '批次不存在',
+                getPrinterListURL: locaURL + "printer/list",
+                getItemURL: httpURL + "printer/item",
+                getKuweiURL: httpURL + "entering/storagelocation",
+                getBatchURL: httpURL + "entering/batch",
+                getWarehouseURL: httpURL + "entering/warehouse",
+                postLocationPrinterURL: locaURL + "printer/printlocation",
+                postItemPrinterURL: locaURL + "printer/printitem",
+                postStcoPrinterURL: locaURL + "printer/printstco",
+                postClotPrinterURL: locaURL + "printer/printclot",
+                getstcoListURL: httpURL + "entering/workcenter",
+                printerList: [],
+                warehouse: [],
+                kuwei: [],
+                item: [],
+                stcolist: [],
+                clotlist: [],
+                picilist: [],
+                warehouseNo: "",
+                companyNo: "",
+                userid: "",
+                username: "",
+                chooseKuweiFlag: 0,
+                chooseWuliaoFlag: 0,
+            },
+            methods: {
+                //进入页面执行
+                userJudge: function () {
+                    if (user == null) {
+                        window.location.href = "login.html";
+                    }
+                    vm.default_printer = userData.data.user.defaultprinter;
+                    vm.warehouseNo = userData.data.user.warehouseNo;
+                    vm.companyNo = userData.data.user.companyNo;
+                    vm.userid = userData.data.user.id;
+                    vm.username = userData.data.user.username;
+                    vm.getPrinterList();
+                    vm.getWarehouse("k");
+                    vm.getWarehouse("w");
+                    if (userData.data.user.len == 'E') {
+                        vm.barcode_print_len = 'Barcode Printing';
+                        vm.loca_print_len = 'Loca Printing';
+                        vm.item_print_len = 'Item Printing';
+                        vm.printer_len = 'Printer';
+                        vm.warehouse_len = 'Warehouse';
+                        vm.loca_len = 'Loca',
+                            vm.item_len = 'Item';
+                        vm.num_len = 'Num';
+                        vm.print_len = 'Print';
+                        vm.pici_len = 'Batch';
+                        vm.stco_len = 'Stco';
+                        vm.stco_print_len = 'Stco Printing';
+                        vm.clot_print_len = 'Clot Printing';
+                        vm.no_printer_len = 'No printer';
+                        vm.system_error_len = 'System error';
+                        vm.not_warehouse = 'The warehouse does not exist';
+                        vm.input_number_error = 'TInput number error';
+                        vm.not_clot_len = 'Batch is NULL';
+                        vm.please_select_warehouse_len = 'Please select warehouse !';
+                        vm.successfully_sent_to_printer = 'Successfully sent to printer!';
+                        vm.error_sent_to_printer = 'Print failed, please check whether the printer is connected!';
+                    }
+                },
+                getKuweiInfo: function () {
+                    vm.getPrinterList();
+                    vm.getWarehouse("k");
+                },
+                getWuliaoInfo: function () {
+                    vm.getPrinterList();
+                    vm.getWarehouse("w");
+                },
+                getStcoInfo: function () {
+                    $.get(vm.getstcoListURL, {
+                        companyNo: vm.companyNo,
+                    }, function (response) {
+                        var centers = JSON.parse(response);
+                        if (centers.code == 1) {
+                            vm.stcolist = centers.data.ErpWorkCenter;
+                        }
+                    }, function (response) {
+
+                    });
+                },
+                getPrinterList: function () {
+                    $.get(vm.getPrinterListURL, function (response) {
+                        var data = JSON.parse(response);
+                        console.log(data);
+                        console.log(data.code);
+                        if (data.code == 1) {
+                            vm.printerList = data.data.Printer;
+                            console.log(vm.printerList);
+                        } else {
+                            $.toast(vm.no_printer_len);
+                        }
+                    }, function (response) {
+                        $.toast(vm.system_error_len);
+                    })
+                },
+                getWarehouse: function (page) {
+                    $.get(vm.getWarehouseURL + '?companyNo=' + vm.companyNo, function (response) {
+                        console.log(response);
+                        var data = JSON.parse(response);
+                        console.log(data);
+                        //                            console.log(data.code);
+                        if (data.code == 1) {
+                            vm.warehouse = data.data.Warehouse;
+                            console.log(page);
+                            if (page == "k") {
+                                vm.getKuwei();
+                            } else if (page == "w") {
+                                console.log(1);
+                                vm.getWuliao();
+                            }
+                        } else {
+                            $.toast(vm.not_warehouse);
+                        }
+                    }, function (response) {
+
+                    })
+                },
+                getKuwei: function () {
+                    var t = $("#kuwei-cw").val();
+                    console.log(t);
+                    if (!t || t == 0) {
+                        //                        $.toast("请选择仓位");
+                        return;
+                    } else {
+                        $.get(vm.getKuweiURL + "?cwar=" + t + '&companyNo=' + vm.companyNo, function (response) {
+                            vm.chooseKuweiFlag = 1;
+                            var data = JSON.parse(response);
+                            console.log(data);
+                            if (data.code == 1) {
+                                vm.kuwei = data.data;
+                            } else {
+                                $.toast(vm.system_error_len);
+                            }
+                        }, function (response) {
+
+                        })
+                    }
+                },
+                getWuliao: function (a) {
+                    var t = '';
+                    if (a == 'wuliao') {
+                        t = $("#wuliao-cw").val();
+                    } else {
+                        t = $("#clot-cw").val();
+                    }
+
+                    if (!t || t == 0) {
+                        return;
+                    } else {
+                        $.get(vm.getItemURL + "?cwar=" + t + '&companyNo=' + vm.companyNo, function (response) {
+                            vm.chooseWuliaoFlag = 1;
+                            var data = JSON.parse(response);
+                            console.log(data);
+                            if (data.code == 1) {
+                                vm.item = data.data.Item;
+                                vm.getClotList(vm.item[0].code);
+                            } else {
+                                $.toast(vm.system_error_len);
+                            }
+                        }, function (response) {
+
+                        })
+                    }
+                },
+                getClotList: function (item) {
+                    console.log(item)
+                    if (item == null) {
+                        item = $("#clot-item").val();
+                    }
+                    $.get(vm.getBatchURL, {
+                        cwar: $("#clot-cw").val(),
+                        item: item,
+                        companyNo: vm.companyNo,
+                    },
+                        function (response) {
+                            console.log(response)
+                            var batchs = JSON.parse(response);
+                            var bc = null;
+                            if (batchs.code == 1) {
+                                vm.picilist = batchs.data.Batch;
+                            }
+                        })
+                },
+                printByPage: function (page) {
+                    console.log(page);
+                    if (page == "k") {
+                        var cw = $("#kuwei-cw").val();
+                        var kw = $("#kuwei-kw").val();
+                        var t = $("#kuwei-kw option").not(function () { return !this.selected }).text();
+                        var dy = $("#kuwei-dy").val();
+                        var num = $("#kuwei-num").val();
+                        //去掉（）中的dsca
+                        t = t.substring(0, t.indexOf("("))
+                    } else if (page == "w") {
+                        var cw = $("#wuliao-cw").val();
+                        var kw = $("#wuliao-item").val();
+
+                        var t = $("#wuliao-item option").not(function () { return !this.selected }).text();
+                        var dy = $("#wuliao-dy").val();
+                        var num = $("#wuliao-num").val();
+                        //去掉（）中的dsca
+                        t = t.substring(0, t.indexOf("("))
+                    }
+                    if (!num || num == '0') {
+                        $.toast(vm.input_number_error);
+                        return;
+                    }
+                    var p = {};
+                    if (page == "k") {
+                        qs = vm.postLocationPrinterURL;
+                        p = {
+
+                            cwar: cw,
+                            loca: kw,
+                            locaDsca: t,
+                            num: num,
+                            userid: vm.userid,
+                            printername: dy,
+                            companyNo: vm.companyNo,
+
+                        }
+                    } else if (page == "w") {
+                        qs = vm.postItemPrinterURL;
+                        p = {
+                            cwar: cw,
+                            item: kw,
+                            itemDsca: t,
+                            num: num,
+                            userid: vm.userid,
+                            printername: dy,
+                            companyNo: vm.companyNo,
+                        }
+
+                    }
+                    $.get(qs, p, function (response) {
+                        console.log(response);
+                        var data = JSON.parse(response);
+                        if (data.code == 1) {
+                            $.toast(vm.successfully_sent_to_printer);
+
+                        } else {
+                            $.toast(vm.error_sent_to_printer);
+                        }
+                    }, function (response) {
+                    })
+                },
+                printStco: function () {
+                    var stco = $("#stco").val();
+                    var dsca = "";
+                    for (i = 0; i < vm.stcolist.length; i++) {
+                        if (vm.stcolist[i].code == stco) {
+                            dsca = vm.stcolist[i].dsca;
+                        }
+                    }
+                    var dy = $("#stco-dy").val();
+                    var num = $("#stco-num").val();
+                    $.get(vm.postStcoPrinterURL, {
+                        stco: stco,
+                        dsca: dsca,
+                        num: num,
+                        printername: dy,
+                        companyNo: vm.companyNo,
+                    }, function (response) {
+                        console.log(response);
+                        var data = JSON.parse(response);
+                        console.log(data);
+                        //                            console.log(data.code);
+                        if (data.code == 1) {
+                            $.toast(vm.successfully_sent_to_printer);
+
+                        } else {
+                            $.toast(vm.error_sent_to_printer);
+                        }
+                    }, function (response) {
+
+                    })
+                },
+                printClot: function () {
+                    var cwar = $("#clot-cw").val();
+                    var item = $("#clot-item").val();
+                    var dsca = "(B)硅铁Si≥72%,C≤0.2% P≤0.05% Cr≤0.3% S≤0.02% Al≤1.8% Mn≤0.4% 粒S≤0.02% Al≤1.8% Mn≤0.4% 粒";
+                    var clot = $("#clot").val();
+                    var dy = $("#clot-dy").val();
+                    var num = $("#clot-num").val();
+                    if (clot == "" || clot == null) {
+                        return $.toast(vm.not_clot_len);
+                    } 
+                    $.get(vm.postClotPrinterURL, {
+                        cwar: cwar,
+                        item: item,
+                        dsca: dsca,
+                        clot: clot,
+                        num: num,
+                        user: vm.username,
+                        userid: vm.userid,
+                        printername: dy,
+                        companyNo: vm.companyNo,
+                    }, function (response) {
+                        console.log(response);
+                        var data = JSON.parse(response);
+                        console.log(data);
+                        //                            console.log(data.code);
+                        if (data.code == 1) {
+                            $.toast(vm.successfully_sent_to_printer);
+
+                        } else {
+                            $.toast(vm.error_sent_to_printer);
+                        }
+                    }, function (response) {
+
+                    })
+                },
+                //                getReplace : function (s) {
+                //                    var str = s.replace(/%/g, "%25").replace(/\+/g, "%2B").replace(/\s/g, "+"); // % + \s
+                //                    str = str.replace(/-/g, "%2D").replace(/\*/g, "%2A").replace(/\//g, "%2F"); // - * /
+                //                    str = str.replace(/\&/g, "%26").replace(/!/g, "%21").replace(/\=/g, "%3D"); // & ! =
+                //                    str = str.replace(/\?/g, "%3F").replace(/:/g, "%3A").replace(/\|/g, "%7C"); // ? : |
+                //                    str = str.replace(/\,/g, "%2C").replace(/\./g, "%2E").replace(/#/g, "%23"); // , . #
+                //                    return str; },
+                //                    return str; },
+                exit: function () {
+                    localStorage.clear();
+                    window.location.href = "login.html";
+                },
+            }
+        });
+        vm.userJudge();
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+
+</html>

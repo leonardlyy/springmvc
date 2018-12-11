@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.erpmapper.ErpStorageLocationMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="t_loca" property="code" jdbcType="VARCHAR" />
+		<result column="t_dsca" property="dsca" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t_loca, t_dsca
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		<include refid="Base_Column_List" />
+		from twhwmd300${companyNo}
+		where t_cwar = #{if1,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectDefault" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		SELECT t_loca,t_dsca FROM (
+		select
+		twhinr140${companyNo}.t_cwar,twhinr140${companyNo}.t_item,twhinr140${companyNo}.t_loca,twhinr140${companyNo}.t_clot,twhwmd300${companyNo}.t_dsca
+		from
+		twhinr140${companyNo}
+		LEFT JOIN twhwmd300${companyNo} ON twhwmd300${companyNo}.t_loca =
+		twhinr140${companyNo}.t_loca
+		AND twhwmd300${companyNo}.t_cwar = twhinr140${companyNo}.t_cwar
+		<where>
+			<if test="if2 != null and if2 != ''">
+				AND twhinr140${companyNo}.t_clot = #{if2,jdbcType=VARCHAR}
+			</if>
+			<if test="if3 != null">
+				and twhinr140${companyNo}.t_item = #{if3,jdbcType=VARCHAR}
+			</if>
+			and twhinr140${companyNo}.t_cwar = #{if1,jdbcType=VARCHAR}
+			AND twhinr140${companyNo}.t_qhnd > 0
+		</where>
+		) t
+		left join twhltc105${companyNo} on t.t_clot=twhltc105${companyNo}.t_clot
+		AND t.t_cwar = twhltc105${companyNo}.t_cwar
+		AND t.t_item = twhltc105${companyNo}.t_item
+		order by twhltc105${companyNo}.t_trdt
+	</select>
+
+
+</mapper>

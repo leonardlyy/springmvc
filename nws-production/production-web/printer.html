@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>打印机设置</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/sm.min.css">
+    <!--<link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">-->
+    <style>
+        /*a:link,a:visited{
+            color: black;
+        }*/
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .bar button{
+            border:0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+        .bar button img{
+            max-height: 100%;
+        }
+        .bar-header-secondary~.content{
+            top: 3rem;
+        }
+        .content-padded~.content{
+            top: 4.4rem;
+        }
+        .bar .icon img{
+            max-height: 10%;
+            max-width: 10%;
+        }
+        label.icon{
+            width: 10%;
+        }
+        .content-padded .searchbar .icon img{
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+        .content-item{
+            /*height: 33%;*/
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+        .item{
+            width:25%;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align:center;
+            vertical-align:middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .item-label{
+            display:block;
+            font-size:.65rem;
+            position:relative;
+            top:.15rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-group" id="printer-page">
+        <!--打印机设置首页-->
+        <div class="page page-current" id="index-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{print_settings_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="content-item">
+                    <a class="item" href="#label-change-page" @click="getLabelList()">
+                        <span class="item-icon"><img src="img/biaoqian.png"></span>
+                        <span class="item-label">{{label_adjustment_len}}</span>
+                    </a>
+                    <a class="item" href="#default-printer-page">
+                        <span class="item-icon"><img src="img/morendayinji.png"></span>
+                        <span class="item-label">{{default_printer_len}}</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!--标签调整页面-->
+        <div class="page" id="label-change-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{label_adjustment_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="content-block-title">{{loca_adjustment_len}}</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{top_margin_len}}</div>
+                                    <div class="item-input">
+                                        <input id="kwTop" type="number" min="0" :value="kuweiLabelObj.top" @change="kuweiChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{left_margin_len}}</div>
+                                    <div class="item-input">
+                                        <input id="kwLeft" type="number" min="0" :value="kuweiLabelObj.left" @change="kuweiChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block-title">{{item_adjustment_len}}</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{top_margin_len}}</div>
+                                    <div class="item-input">
+                                        <input id="wlTop" type="number" min="0" :value="wuliaoLabelObj.top" @change="wuliaoChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{left_margin_len}}</div>
+                                    <div class="item-input">
+                                        <input id="wlLeft" type="number" min="0" :value="wuliaoLabelObj.left" @change="wuliaoChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="content-block-title">{{work_center_label_modification_len}}</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{top_margin_len}}</div>
+                                    <div class="item-input">
+                                        <input id="stcoTop" type="number" min="0" :value="stcoLabelObj.top" @change="stcoChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{left_margin_len}}</div>
+                                    <div class="item-input">
+                                        <input id="stcoLeft" type="number" min="0" :value="stcoLabelObj.left" @change="stcoChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="content-block-title">{{batch_label_modification_len}}</div>
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{top_margin_len}}</div>
+                                    <div class="item-input">
+                                        <input id="clotTop" type="number" min="0" :value="clotLabelObj.top" @change="clotChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{left_margin_len}}</div>
+                                    <div class="item-input">
+                                        <input id="clotLeft" type="number" min="0" :value="clotLabelObj.left" @change="clotChange()">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="content-block">
+                    <div class="row">
+                        <!--<div class="col-50"><a href="#" class="button button-big button-fill button-danger" @click="cancelChange()">取消</a></div>-->
+                        <div class="col-100"><a href="#" class="button button-big button-fill button-success" @click="updateLabelList()">{{submit_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--默认打印机页面-->
+        <div class="page" id="default-printer-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{default_printer_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{default_printer_len}}</div>
+                                    <div class="item-input">
+                                        <select id="dy">
+                                            <option v-for="(value , index) in printerList" v-if="default_printer===value" selected="selected" :value="value">{{value}}</option>
+                                            <option v-for="(value , index) in printerList" v-if="default_printer!=value" :value="value">{{value}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="col-100" @click="submitChange()"><a href="#" class="button button-big button-fill button-success">{{submit_len}}</a></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!--<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>-->
+    <!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>-->
+    <script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/vue-resource.min.js"></script>
+    <!--<script type="text/javascript" src="js/vue-resource.min.js" charset="utf-8"></script>-->
+    <script src="js/constant.js"></script>
+    <script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+    <script>
+        $.init();
+        var user=localStorage.getItem('user');
+        var userData=JSON.parse(user);
+        var httpURL = httpUrl;
+        var locaURL = locaUrl;
+//        var httpURL ="http://localhost:8080/production/";
+        var vm = new Vue({
+            el : "#printer-page",
+            data : {
+
+                print_settings_len : '打印机设置',
+                label_adjustment_len : '标签调整',
+                default_printer_len : '默认打印机',
+                loca_adjustment_len : '库位标签调整',
+                top_margin_len : '上边距',
+                left_margin_len : '左边距',
+                item_adjustment_len : '物料标签调整',
+                submit_len : '提交',
+                work_center_label_modification_len : '工作中心标签修改',
+                batch_label_modification_len : '批次标签修改',
+                system_exception : "系统异常",
+                success_len : "成功！",
+                not_printer_len : "没有打印机！",
+                default_printer : '',
+                getLabelListURL : httpURL + "printer/labellist",
+                updateLabelListURL : httpURL + "printer/updatelabel",
+                getPrinterListURL : locaURL+"printer/list",
+                updateUserURL : httpURL + "user/updateuser",
+                kuweiLabelObj : {},
+                wuliaoLabelObj : {},
+                clotLabelObj : [],
+                stcoLabelObj : [],
+                printerList : {},
+                labelObj : {},
+                kwTop : 0,
+                userid : "",
+                kuweiLabelChangeFlag : 0,
+                wuliaoLabelChangeFlag : 0,
+            },
+            methods : {
+                userJudge : function () {
+                    vm.default_printer = userData.data.user.defaultprinter;
+                    vm.userid=userData.data.user.id;
+                        vm.getPrinterList();
+                    if(userData.data.user.len=='E'){
+                        vm.print_settings_len = 'Printer Settings';
+                        vm.label_adjustment_len = 'Label Adjustment';
+                        vm.default_printer_len = 'Default Printer';
+                        vm.loca_adjustment_len = 'Warehouse Location Label Adjustment' ;
+                        vm.item_adjustment_len = 'Item Label Adjustment'
+                        vm.top_margin_len = 'Top Margin';
+                        vm.left_margin_len= 'Left Margin';
+                        vm.submit_len = 'Submit';
+                        vm.work_center_label_modification_len = 'Work center label modification';
+                        vm.batch_label_modification_len = 'Batch label modification';
+                        vm.system_exception ="System Exception";
+                        vm.success_len ="Success！";
+                        vm.not_printer_len ="No printer！";
+                    }
+                },
+                getLabelList : function(){
+                   $.get(vm.getLabelListURL,function(response){
+                            var data = JSON.parse(response);
+//                            console.log(data);
+                            vm.labelObj.kuwei = {};
+                            vm.labelObj.wuliao = {};
+                            if(data.code == 1){
+                                for(i in data.data){
+//                                    console.log(i);
+                                    if(data.data[i].id == 1){
+                                        vm.kuweiLabelObj = data.data[i];
+                                        vm.labelObj.kuwei = data.data[i];
+                                    }
+                                    if(data.data[i].id == 2){
+                                        vm.wuliaoLabelObj = data.data[i];
+                                        vm.labelObj.wuliao = data.data[i];
+                                    }
+                                    if(data.data[i].id == 3){
+                                        vm.stcoLabelObj = data.data[i];
+                                        vm.labelObj.stco = data.data[i];
+                                    }
+                                    if(data.data[i].id == 4){
+                                        vm.clotLabelObj = data.data[i];
+                                        vm.labelObj.clot = data.data[i];
+                                    }
+                                }
+                            }else{
+                                $.toast(vm.system_exception);
+                            }
+                        },function(response){
+
+                        })
+                },
+                updateLabelList : function(){
+                    var top = $("#wlTop").val();
+                    var left = $("#wlLeft").val();
+                    vm.setLabelList(2,top,left);
+                    var top = $("#kwTop").val();
+                    var left = $("#kwLeft").val();
+                    vm.setLabelList(1,top,left);
+                    var top = $("#stcoTop").val();
+                    var left = $("#stcoLeft").val();
+                    vm.setLabelList(3,top,left);
+                    var top = $("#clotTop").val();
+                    var left = $("#clotLeft").val();
+                    vm.setLabelList(4,top,left);
+                },
+                setLabelList : function(id,top,left){
+                    $.get(vm.updateLabelListURL ,{
+                            id:id,
+                            top:top,
+                            left:left,
+                            uid:vm.userid
+                        },function(response){
+                            var data = JSON.parse(response);
+                            if(data.code == 1){
+                                $.toast(vm.success_len);
+                            }else{
+                                $.toast(vm.system_exception);
+                            }
+                        })
+                },
+                getPrinterList : function () {
+                    $.get(vm.getPrinterListURL,function(response){
+                            var data = JSON.parse(response);
+                            if(data.code == 1){
+                                vm.printerList = data.data.Printer;
+                            }else{
+                                $.toast(vm.not_printer_len);
+                            }
+                        })
+                },
+                submitChange : function () {
+                    var dy = $("#dy").val();
+                    var userid = userData.data.user.id;
+                    $.get(vm.updateUserURL+"?userid="+userid + "&defaultprinter=" + dy,function (response) {
+                            var data = JSON.parse(response);
+                            console.log(data.message)
+                            if(data.code == 1){
+                                $.toast(vm.success_len);
+                                //localStorage.removeItem('user')
+                                $.get(httpURL+"user/login?username="+userData.data.user.username + "&password=" + userData.data.user.password,function (response) {
+                                        localStorage.setItem('user',response)
+                                    })
+                            }else{
+                                $.toast(vm.system_exception);
+                            }
+                        },function (response) {
+                            $.toast(vm.system_exception);
+                        })
+                },
+                exit:function () {
+                    localStorage.clear();
+                    window.location.href="login.html";
+                },
+            }
+        });
+        vm.userJudge();
+        function goBack(){
+            window.history.back();
+        }
+
+        function  jump() {
+            $.router.load("#printer-detail-page");
+        }
+    </script>
+</body>
+</html>

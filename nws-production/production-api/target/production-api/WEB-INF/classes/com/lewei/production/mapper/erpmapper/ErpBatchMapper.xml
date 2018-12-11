@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.erpmapper.ErpBatchMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="t_clot" property="code" jdbcType="VARCHAR" />
+		<id column="t_idat" property="dsca" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t_clot, t_ldat
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		twhltc105${companyNo}.t_clot, twhltc105${companyNo}.t_ldat
+		from twhltc105${companyNo}
+		left join twhinr140${companyNo} on
+		twhinr140${companyNo}.t_clot=twhltc105${companyNo}.t_clot
+		AND twhinr140${companyNo}.t_cwar=twhltc105${companyNo}.t_cwar
+		AND twhinr140${companyNo}.t_item=twhltc105${companyNo}.t_item
+		<where>
+			<if test="if1 != null and if1 != ''">
+				and twhltc105${companyNo}.t_cwar = #{if1,jdbcType=VARCHAR}
+			</if>
+			<if test="if2 != null and if2 != ''">
+				and twhinr140${companyNo}.t_loca = #{if2,jdbcType=VARCHAR}
+			</if>
+			<if test="if3 != null and if3 != ''">
+				and twhltc105${companyNo}.t_item = #{if3,jdbcType=VARCHAR}
+			</if>
+		</where>
+		ORDER BY twhinr140${companyNo}.t_idat
+	</select>
+</mapper>

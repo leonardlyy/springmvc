@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户设置</title>
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/sm.min.css">
+    <!--<link rel="stylesheet" href="//g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">-->
+    <style>
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .bar button{
+            border:0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+        .bar button img{
+            max-height: 100%;
+        }
+        .bar .icon img{
+            max-height: 10%;
+            max-width: 10%;
+        }
+        .content-padded .searchbar .icon img{
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+        .bar-header-secondary~.content{
+            top: 3rem;
+        }
+        .content-item{
+            /*height: 33%;*/
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+        .item{
+            width:25%;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align:center;
+            vertical-align:middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .item-label{
+            display:block;
+            font-size:.65rem;
+            position:relative;
+            top:.15rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-group">
+        <div class="page page-current" id="index-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png" >
+                </button>
+                <h1 class="title">{{title_user_management_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="content-item">
+                    <a class="item" @click="userListPage()">
+                        <span class="item-icon"><img src="img/yonghushezhi.png"></span>
+                        <span class="item-label">{{user_settings_len}}</span>
+                    </a>
+                    <a class="item" href="#job-setting-page">
+                        <span class="item-icon"><img src="img/zhiwu.jpg"></span>
+                        <span class="item-label">{{position_setting_len}}</span>
+                    </a>
+
+            </div>
+        </div>
+        </div>
+
+        <!--用户设置列表页-->
+        <div class="page" id="user-setting-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{user_settings_len}}</h1>
+            </header>
+            <nav class="bar bar-tab">
+                <a class="tab-item external active" @click="newUser()">
+                    <span class="icon icon-home"></span>
+                    <span class="tab-label">{{new_user_len}}</span>
+                </a>
+            </nav>
+            <div class="content">
+                <div class="list-block contacts-block">
+                    <div class="list-group" v-for="(item, key) in userlist">
+                        <ul >
+                            <li class="item-content item-link" @click="getUserDetails(item.username)">
+                                <div class="item-inner" >
+                                    <div class="item-title" >{{item.name}}</div>
+                                    <div class="item-title" >{{item.username}}</div>
+                                </div>
+                              </li>
+                        </ul>
+                    </div>
+                    <infinite-loading :on-infinite="userList"  ref="infiniteLoading"></infinite-loading>
+                </div>
+            </div>
+        </div>
+
+        <!--用户资料详细页-->
+        <div class="page" id="authority-detail-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{user_information_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <!-- Text inputs -->
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{username_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" v-model="username" placeholder="用户登录帐号">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{name_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" v-model="name" placeholder="用户名称">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content ">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{duty_len}}</div>
+                                    <div class="item-input">
+                                        <select id="duty" >
+                                            <option  v-for="item in dutylist" v-if="dutyid===item.id" selected="selected" :value="item.id">{{item.dutyname}}</option>
+                                            <option  v-for="item in dutylist" v-if="dutyid!=item.id"  :value="item.id">{{item.dutyname}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-email"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{tel_len}}</div>
+                                    <div class="item-input">
+                                        <input type="number" v-model="tel" placeholder="Telphone number">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-email"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{email_len}}</div>
+                                    <div class="item-input">
+                                        <input type="email" v-model="email" placeholder="E-mail">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{companyNo_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" v-model="companyNo" @blur="getWarehouse()" placeholder="用户公司号">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{warehouseNo_len}}(DSP)</div>
+                                    <div class="item-input">
+                                        <!--<select id="warehouse">-->
+                                            <!--<option  v-for="i in warehouse" :value="i.code" v-if="warehouseNo===i.code" selected="selected">{{i.dsca}}({{i.code}})</option>-->
+                                            <!--<option  v-for="i in warehouse" :value="i.code" v-if="warehouseNo!=i.code" >{{i.dsca}}({{i.code}})</option>-->
+                                        <!--</select>-->
+                                        <input type="text" id="warehouse"   placeholder="请输入D仓库代码" v-model="warehouseNo">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{warehouseNo_len}}(NWS)</div>
+                                    <div class="item-input">
+                                        <!--<select id="warehouse">-->
+                                            <!--<option  v-for="i in warehouse" :value="i.code" v-if="warehouseNo===i.code" selected="selected">{{i.dsca}}({{i.code}})</option>-->
+                                            <!--<option  v-for="i in warehouse" :value="i.code" v-if="warehouseNo!=i.code" >{{i.dsca}}({{i.code}})</option>-->
+                                        <!--</select>-->
+                                        <input type="text" id="warehouse1"   placeholder="请输入N仓库代码" v-model="warehouseNo1">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{seri_len}}(DSP)</div>
+                                    <div class="item-input">
+                                        <input type="text" id="up-seriD" placeholder="请输入D系列代码" :value="seriD">
+                                        <!--<select id="up-seri">-->
+                                            <!--<option v-for="s in createSeri" v-if="seri===s.code" selected="selected" :value="s.code">{{s.dsca}}({{s.code}})</option>-->
+                                            <!--<option v-for="s in createSeri" v-if="seri!=s.code"  :value="s.code">{{s.dsca}}({{s.code}})</option>-->
+                                        <!--</select>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{seri_len}}(NWS)</div>
+                                    <div class="item-input">
+                                        <input type="text" id="up-seriN" placeholder="请输入N系列代码" :value="seriN">
+                                        <!--<select id="up-seri">-->
+                                            <!--<option v-for="s in createSeri" v-if="seri===s.code" selected="selected" :value="s.code">{{s.dsca}}({{s.code}})</option>-->
+                                            <!--<option v-for="s in createSeri" v-if="seri!=s.code"  :value="s.code">{{s.dsca}}({{s.code}})</option>-->
+                                        <!--</select>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{otyp_len}}</div>
+                                    <div class="item-input">
+                                        <select id="up-otyp">
+                                            <option v-for="s in createOtyp"  v-if="otyp===s.code" selected="selected" :value="s.code">{{s.dsca}}({{s.code}})</option>
+                                            <option v-for="s in createOtyp"  v-if="otyp!=s.code" :value="s.code">{{s.dsca}}({{s.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-password"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{len_len}}</div>
+                                    <div class="item-input">
+                                        <select id="len">
+                                            <option value="G">中文</option>
+                                            <option v-if="len==='E'"  value="E" selected="selected">English</option>
+                                            <option v-if="len!='E'"  value="E" >English</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-password"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{printer_len}}</div>
+                                    <div class="item-input">
+                                        <select id="defaultprinter">
+                                            <option  v-for="item in printerlist" v-if="defaultprinter===item" selected="selected" :value="item">{{item}}</option>
+                                            <option  v-for="item in printerlist" v-if="defaultprinter!=item"  :value="item">{{item}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-50" @click="deleteUser()"><a href="#" class="button button-big button-fill button-danger">{{delete_user_len}}</a></div>
+                        <div class="col-50" @click="updateUser()"><a href="#" class="button button-big button-fill button-success">{{update_user_len}}</a></div>
+                    </div>
+                </div>
+                    <div class="content-block">
+                    <div class="row">
+                        <div class="col-100" @click="resetPassword()"><a href="#" class="button button-big button-fill">{{reset_password_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--新建用户页-->
+        <div class="page" id="create-user-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{new_user_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <!-- Text inputs -->
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{username_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" v-model="username" >
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{name_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" v-model="name" >
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content ">
+                                <div class="item-media"><i class="icon icon-form-name"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{duty_len}}</div>
+                                    <div class="item-input">
+                                        <select id="newduty" >
+                                            <option  v-for="item in dutylist"  :value="item.id">{{item.dutyname}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-email"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{tel_len}}</div>
+                                    <div class="item-input">
+                                        <input type="number" v-model="tel" placeholder="Telphone number">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-email"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{email_len}}</div>
+                                    <div class="item-input">
+                                        <input type="email" v-model="email" placeholder="E-mail">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{companyNo_len}}</div>
+                                    <div class="item-input" >
+                                        <input type="text" @blur="upCompanyNo()"  v-model="companyNo" >
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{warehouseNo_len}}(DSP)</div>
+                                    <div class="item-input">
+                                        <input type="text" id="newwarehouse"  v-model="warehouseNo" >
+                                        <!--<select id="newwarehouse">-->
+                                        <!--<option  v-for="i in warehouse" :value="i.code"  >{{i.dsca}}({{i.code}})</option>-->
+                                        <!--</select>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{warehouseNo_len}}(NWS)</div>
+                                    <div class="item-input">
+                                        <input type="text" id="newwarehouse1" v-model="warehouseNo1" >
+                                        <!--<select id="newwarehouse">-->
+                                        <!--<option  v-for="i in warehouse" :value="i.code"  >{{i.dsca}}({{i.code}})</option>-->
+                                        <!--</select>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{seri_len}}(DSP)</div>
+                                    <div class="item-input">
+                                        <input type="text" id="new-seriD"   >
+                                        <!--<select id="new-seri">-->
+                                            <!--<option v-for="s in createSeri" :value="s.code">{{s.dsca}}({{s.code}})</option>-->
+                                        <!--</select>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{seri_len}}(NWS)</div>
+                                    <div class="item-input">
+                                        <input type="text" id="new-seriN"   >
+                                        <!--<select id="new-seri">-->
+                                            <!--<option v-for="s in createSeri" :value="s.code">{{s.dsca}}({{s.code}})</option>-->
+                                        <!--</select>-->
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{otyp_len}}</div>
+                                    <div class="item-input">
+                                        <select id="new-otyp">
+                                            <option v-for="s in createOtyp" :value="s.code">{{s.dsca}}({{s.code}})</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-password"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{len_len}}</div>
+                                    <div class="item-input">
+                                        <select id="newlen">
+                                            <option value="G">中文</option>
+                                            <option v-if="len==='E'"  value="E" selected="selected">English</option>
+                                            <option v-if="len!='E'"  value="E" >English</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+
+                        <li>
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-password"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{printer_len}}</div>
+                                    <div class="item-input">
+                                        <select id="newdefaultprinter">
+                                            <option  v-for="item in printerlist"  :value="item">{{item}}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-100" @click="saveUser()"><a href="#" class="button button-big button-fill button-success">{{update_user_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--职务列表页面-->
+        <div class="page" id="job-setting-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{position_setting_len}}</h1>
+            </header>
+            <nav class="bar bar-tab">
+                <a class="tab-item active" @click="newDuty()" >
+                    <span class="icon icon-home"></span>
+                    <span class="tab-label">{{new_duties_len}}</span>
+                </a>
+            </nav>
+            <div class="content">
+                <div class="list-block contacts-block">
+                    <div class="list-group">
+                        <ul>
+                            <li class="item-content item-link" v-for="item in dutylist">
+                                <div class="item-inner" @click="getDutyDetails(item.dutyname)">
+                                    <div class="item-title">{{item.dutyname}}</div>
+                                    <div class="item-title">{{item.id}}</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--修改或删除职务页面-->
+        <div class="page" id="update-job-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{position_setting_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{position_title_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" disabled id="ddutyname" placeholder="">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul>
+                         <li class="align-top">
+                             <div class="item-content">
+                                 <div class="item-media"><i class="icon icon-form-comment"></i></div>
+                                 <div class="item-inner">
+                                      <div class="item-title label">{{brief_introduction_len}}</div>
+                                      <div class="item-input">
+                                         <textarea id="dremark" disabled></textarea>
+                                      </div>
+                                 </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block-title">{{business_permission_len}}</div>
+                <div class="list-block">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{barcode_print_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="1" name="checkbox" id="box_1">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label " style="min-width: 10rem">{{barcode_scan_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="2" name="checkbox" id="box_2">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{sale_control_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="3" name="checkbox" id="box_3">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{purchase_control_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="4" name="checkbox" id="box_4">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{stock_control_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="5" name="checkbox" id="box_5">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{print_settings_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="6" name="checkbox" id="box_6">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                <div class="content-block-title">{{other_permissions_len}}</div>
+
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{jobnumber_settings_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox"  value="7" name="checkbox" id="box_7">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{offline_settings_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="8" name="checkbox" id="box_8" >
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{data_settings_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="9" name="checkbox" id="box_9">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{user_control_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="10" name="checkbox" id="box_10">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{system_setting_len}}</div>
+                                <div class="item-input" >
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="11" name="checkbox" id="box_11">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-50" @click="deleteDuty()"><a href="#" class="button button-big button-fill button-danger">{{delete_user_len}}</a></div>
+                        <div class="col-50" @click="updateDuty()"><a href="#" class="button button-big button-fill button-success">{{update_user_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--新增职务页面-->
+        <div class="page" id="create-job-page">
+            <header class="bar bar-nav">
+                <button class="button pull-left" onclick="goBack()">
+                    <img src="img/back.png">
+                </button>
+                <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                    <img src="img/exit-black.png">
+                </button>
+                <h1 class="title">{{position_setting_len}}</h1>
+            </header>
+            <div class="content">
+                <div class="list-block">
+                    <ul>
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title label">{{position_title_len}}</div>
+                                    <div class="item-input">
+                                        <input type="text" id="newddutyname" placeholder="">
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li class="align-top">
+                            <div class="item-content">
+                                <div class="item-media"><i class="icon icon-form-comment"></i></div>
+                                <div class="item-inner">
+                                    <div class="item-title label">{{brief_introduction_len}}</div>
+                                    <div class="item-input">
+                                        <textarea id="newdremark"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block-title">{{business_permission_len}}</div>
+                <div class="list-block">
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{barcode_print_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="1" name="newcheckbox" id="newbox_1">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label " style="min-width: 10rem">{{barcode_scan_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="2" name="newcheckbox" id="newbox_2">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{sale_control_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="3" name="newcheckbox" id="newbox_3">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{purchase_control_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="4" name="newcheckbox" id="newbox_4">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{stock_control_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="5" name="newcheckbox" id="newbox_5">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{print_settings_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="6" name="newcheckbox" id="newbox_6">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="content-block-title">{{other_permissions_len}}</div>
+
+                    <ul>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{jobnumber_settings_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox"  value="7" name="newcheckbox" id="newbox_7">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{offline_settings_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="8" name="newcheckbox" id="newbox_8" >
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{data_settings_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="9" name="newcheckbox" id="newbox_9">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{user_control_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="10" name="newcheckbox" id="newbox_10">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="item-content">
+                            <div class="item-media"><i class="icon icon-f7"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label"  style="min-width: 10rem">{{system_setting_len}}</div>
+                                <div class="item-input" >
+                                    <label class="label-switch">
+                                        <input type="checkbox" value="11" name="newcheckbox" id="newbox_11">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <div class="row">
+                        <div class="col-100" @click="saveDuty()"><a href="#" class="button button-big button-fill button-success">{{update_user_len}}</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!--<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>-->
+    <!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>-->
+    <script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+    <script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+    <script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/vue-resource.min.js"></script>
+    <script type="text/javascript" src="js/vue-infinite-loading.js"></script>
+    <script src="js/constant.js"></script>
+    <script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+    <!--<script type="text/javascript" src="js/vue-resource.min.js" charset="utf-8"></script>-->
+    <script>
+        $.init();
+//        var httpURL = "http://lewei.upfresh.cn:9090/production/";
+ //       var httpURL ="http://localhost:8080/production/";
+//        var httpURL ="http://localhost:8988/";
+         var httpURL =httpUrl;
+        var user=localStorage.getItem('user');
+        var userData=JSON.parse(user);
+
+
+
+        var vm = new Vue({
+            el : '.page-group',
+            data : {
+                title_user_management_len:'用户管理',
+                user_settings_len:'用户设置',
+                position_setting_len :'权限设置',
+                new_user_len : '新建用户',
+                user_list_len : '0.0',
+                user_information_len:'用户资料',
+                username_len:'用户名',
+                name_len:'姓名',
+                duty_len:'权限',
+                email_len:'邮箱',
+                tel_len : "手机",
+                companyNo_len:'公司号',
+                warehouseNo_len:'仓库',
+                len_len:'语言',
+                printer_len:'默认打印机',
+                delete_user_len:'删除',
+                reset_password_len : '重置密码',
+                update_user_len:'保存',
+                new_duties_len:'新增权限',
+                position_title_len:'权限名称',
+                brief_introduction_len:'简介',
+                business_permission_len : '业务权限设置',
+                other_permissions_len : '其他权限设置',
+                barcode_print_len:'条码打印',
+                barcode_scan_len:'条码扫描',
+                sale_control_len:'销售管理',
+                purchase_control_len:'采购管理',
+                stock_control_len:'库存管理',
+                print_settings_len:'打印机设置',
+                jobnumber_settings_len:'工号设置',
+                offline_settings_len:'离线设置',
+                data_settings_len:'数据设置',
+                user_control_len:'用户管理',
+                system_setting_len:'系统设置',
+                title_len:'条码系统',
+                seri_len : '系列',
+                otyp_len : '仓单类型',
+                success_len : '成功',
+                getting_list_failure : '获取列表失败',
+                error_len : '失败',
+                deleting_len : '正在删除',
+                permission_is_used_len : '权限正在被使用！',
+                initial_password_len : '初始密码为：',
+                in_succ_seri_len : '请输入正确的系列代码!',
+                userid : "",
+                username : "",
+                name : "",
+                dutyid : "",
+                ddutyid : "",
+                authorityids : [],
+                dutyname : "",
+                tel : "",
+                email : "",
+                companyNo : "",
+                seriD:"",
+                seriN:"",
+                otyp:"",
+                warehouseNo : "",
+                warehouseNo1 : "",
+                len : "",
+                defaultprinter : "",
+                getUserListUrl : httpURL + "user/userlist",
+                getDutyListUrl : httpURL + "user/dutylist",
+                getUserDetailsUrl : httpURL + "user/userdetails",
+                getPrinterListURL : httpURL + "printer/list",
+                getUpdateUserUrl : httpURL + "user/updateuser",
+                getNewUserUrl : httpURL + "user/saveuser",
+                getWarehouseURL :httpURL + "entering/warehouse",
+                getDutyDetailsUrl : httpURL + "user/dutydetails",
+                getUpdateDutyUrl : httpURL + "user/updateauthority",
+                getDeleteDutyUrl : httpURL + "user/deleteduty",
+                getSaveDutyUrl : httpURL + "user/saveduty",
+                getSeriURL : httpURL + "entering/series",//获取系列接口
+                getOtypURL : httpURL + "entering/type",//获取仓单类型接口
+                pageNo : 1,
+                pageSize : 20,
+                userlistflag : window.location.hash,
+                userlist:[],
+                dutylist:[],
+                printerlist :{},
+                warehouse :{},
+                createSeri:{},
+                createOtyp : {},
+            },
+           methods : {
+               userJudge:function () {
+                   if(user==null){
+                       window.location.href="login.html";
+                   }
+                   vm.pageNo = 1;
+                   vm.getDutyList();
+                   if(userData.data.user.len=='E'){
+                       vm.title_user_management_len = 'User Management';
+                       vm.user_settings_len = 'User Settings';
+                       vm.position_setting_len = 'Position Setting';
+                       vm.new_user_len = 'New User';
+                       vm.user_information_len = 'User Information';
+                       vm.username_len = 'User Name';
+                       vm.name_len = 'Name';
+                       vm.duty_len = 'Post';
+                       vm.email_len = 'E-mail';
+                       vm.companyNo_len = 'Company No';
+                       vm.warehouseNo_len = 'Warehouse No';
+                       vm.len_len = 'Language';
+                       vm.printer_len = 'Default Printer';
+                       vm.delete_user_len = 'Delete';
+                       vm.reset_password_len = 'Reset Password';
+                       vm.update_user_len = 'Save';
+                       vm.position_title_len = 'Position Title';
+                       vm.brief_introduction_len = 'Remarks';
+                       vm.business_permission_len = 'Business Permission Setting';
+                       vm.other_permissions_len = 'Other Permission Setting';
+                       vm.barcode_print_len = 'Barcode Printing';
+                       vm.barcode_scan_len = 'Barcode Scanner';
+                       vm.sale_control_len = 'Sales Management';
+                       vm.purchase_control_len = 'Purchasing Management';
+                       vm.stock_control_len = 'Inventory Management';
+                       vm.print_settings_len = 'Printer Settings';
+                       vm.jobnumber_settings_len = 'No Settings';
+                       vm.offline_settings_len = 'Offline Settings';
+                       vm.data_settings_len = 'Data Settings';
+                       vm.user_control_len = 'User Management';
+                       vm.system_setting_len = 'System Settings';
+                       vm.personal_center_len = 'Personal Center';
+                       vm.title_len = 'Barcode System';
+                       vm.tel_len = 'Tel';
+                       vm.seri_len = 'seri';
+                       vm.otyp_len='otyp';
+                       vm.success_len='Success';
+                       vm.error_len='Error';
+                       vm.deleting_len='deleting';
+                       vm.in_authority_name_len='Please input authority name';
+                       vm.permission_is_used_len='Permission is used!';
+                       vm.in_succ_seri_len='Please enter the correct series of code!';
+                       vm.initial_password_len='The initial password is :';
+                       vm.getting_list_failure='Getting list failure';
+                   }
+
+               },
+               userListPage : function () {
+                   $.router.load("#user-setting-page");
+                   vm.userlistflag='#user-setting-page';
+                   vm.userlist = [];
+                   vm.userList();
+               },
+               userList : function () {
+                   if(vm.userlistflag==='#user-setting-page'){
+                       $.get(vm.getUserListUrl,
+                           {
+                               pageNo : vm.pageNo,
+                               pageSize: vm.pageSize,
+                           },function (response) {
+//                            console.log(response)
+                               var a = JSON.parse(response);
+                               vm.userlist = vm.userlist.concat(a.data.results);
+                               if (a.data.total >= (vm.pageNo * vm.pageSize) && a.data.total>0) {
+                                   vm.pageNo=vm.pageNo +1;
+                                   setTimeout(function () {
+                                       vm.$refs.infiniteLoading.$emit('$InfiniteLoading:loaded');
+                                   }.bind(vm), 1000);
+                               } else {
+                                   vm.$refs.infiniteLoading.$emit('$InfiniteLoading:complete');
+                               }
+                           });
+                   }
+               },
+               getUserDetails : function (username) {
+                   $.get(vm.getUserDetailsUrl,
+                       {
+                           username : username
+                       },function (response) {
+//                            console.log(response)
+                           var userdetails =JSON.parse(response);
+                           vm.userid =userdetails.data.id;
+                           vm.username = username;
+                           vm.name = userdetails.data.name;
+                           vm.dutyid = userdetails.data.userDuty.id;
+                           vm.dutyname = userdetails.data.userDuty.dutyname;
+                           vm.tel = userdetails.data.tel;
+                           vm.email = userdetails.data.email;
+                           vm.companyNo = userdetails.data.companyNo;
+                           vm.getWarehouse();
+                           vm.warehouseNo = userdetails.data.warehouseNo;
+                           vm.warehouseNo1 = userdetails.data.warehouseNo1;
+                           vm.getSeries();
+                           vm.seriD = userdetails.data.seri;
+                           vm.seriN = userdetails.data.seriN;
+                           vm.getOtype();
+                           vm.otyp = userdetails.data.otyp;
+                           vm.len = userdetails.data.len;
+                           vm.defaultprinter = userdetails.data.defaultprinter;
+                           vm.getDutyList();
+                           vm.getPrinterList();
+                           $.router.load("#authority-detail-page");
+                       });
+               },
+               getDutyDetails : function (ddutyname) {
+                   $("[name='checkbox']").prop("checked", false);
+                   $.get(vm.getDutyDetailsUrl,
+                       {
+                           dutyname : ddutyname,
+                       },function (response) {
+//                            console.log(response)
+                           var dutydetails = JSON.parse(response);
+                           vm.ddutyid = dutydetails.data.duty.id;
+                           $("#ddutyname").val(ddutyname);
+                           $("#dremark").text(dutydetails.data.duty.remark);
+                           for(var i=0;i<dutydetails.data.authority.length;i++){
+                               $("#box_"+ dutydetails.data.authority[i].id).prop("checked", true);
+                           }
+                           $.router.load("#update-job-page");
+                       });
+               },
+               getDutyList : function () {
+                   $.get(vm.getDutyListUrl,function (response) {
+//                            console.log(response)
+                           var dutys =JSON.parse(response);
+                           if(dutys.code===1){
+                               vm.dutylist=dutys.data;
+                           }else{
+                               $.toast(vm.getting_list_failure)
+                           }
+                       });
+               },
+               updateDuty : function () {
+                   var id_array=new Array();
+                   $('input[name="checkbox"]:checked').each(function () {
+                       id_array.push($(this).val());
+                   })
+                   var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
+                   if(idstr=='') idstr=-1;
+                   $.get(vm.getUpdateDutyUrl,
+                       {
+                           dutyid : vm.ddutyid,
+                           authorityids : idstr,
+                       },function (response) {
+//                            console.log(response)
+                           var res =JSON.parse(response);
+                           if(res.code===1){
+                               $.toast(vm.success_len)
+                           }else{
+                               $.toast(vm.error_len)
+                           }
+                       });
+               },
+               deleteDuty : function () {
+                   $.showPreloader(vm.deleting_len+'...');
+                   $.get(vm.getDeleteDutyUrl,
+                       {
+                           dutyid : vm.ddutyid,
+                       },function (response) {
+//                            console.log(response)
+                           var data =JSON.parse(response);
+                           if(data.code==1){
+                               if(data.data==""){
+                                   $.hidePreloader();
+                                   $.toast(vm.success_len);
+                                   $.router.load("#job-setting-page");
+                                   vm.userlist=[];
+                                   vm.getDutyList();
+                               }else{
+                                   var username_array=new Array();
+                                   for(i=0;i<data.data.length;i++){
+                                       username_array.push(data.data[i].username)
+                                   }
+                                   var usernamestr=username_array.join(',');
+                                   $.hidePreloader();
+                                   $.toast(vm.permission_is_used_len);
+                                   setTimeout(function () {
+                                       if(usernamestr.length>10){
+                                           usernamestr=usernamestr.substring(0,15)+"...";
+                                       }
+                                       $.alert("["+usernamestr + "]");
+                                   },2000);
+                               }
+                           }else{
+                               $.hidePreloader();
+                               $.toast(vm.error_len);
+                           }
+                       });
+               },
+               newDuty : function () {
+                   $.router.load("#create-job-page");
+                   $("#newddutyname")[0].focus();
+               },
+               saveDuty : function () {
+                   if($("#newddutyname").val()==''){
+                       $.toast(vm.in_authority_name_len);
+                   }else{
+                       var n =$("#newddutyname").val();
+                       var k = $("#newdremark").val();
+                       $.get(vm.getSaveDutyUrl,
+                           {
+                               dutyname: n,
+                               remark: k,
+                           },function (response) {
+//                            console.log(response)
+                               var data =JSON.parse(response);
+                               if(data.code==1){
+                                   for(i=0;i<data.data.length;i++){
+                                       if(data.data[i].dutyname==n){
+                                           var id_array=new Array();
+                                           $('input[name="newcheckbox"]:checked').each(function () {
+                                               id_array.push($(this).val());
+                                           })
+                                           var idstr=id_array.join(',');//将数组元素连接起来以构建一个字符串
+                                           if(idstr=='') idstr=-1;
+                                           $.get(vm.getUpdateDutyUrl,{
+                                                   dutyid : data.data[i].id,
+                                                   authorityids : idstr,
+                                           },function (res1) {
+                                               var data1 =JSON.parse(response);
+                                               if(data1.code==1){
+                                                   $.toast(vm.success_len);
+                                                   $.router.load("#job-setting-page");
+                                                   vm.userlist=[];
+                                                   vm.getDutyList();
+                                               }else{
+                                                   $.toast(vm.error_len)
+                                               }
+                                           })
+                                       }
+                                   }
+                               }else{
+                                   $.toast(vm.error_len);
+                               }
+                           });
+                   }
+
+               },
+               getPrinterList : function () {
+                   $.get(vm.getPrinterListURL,function (response) {
+                           var printers = JSON.parse(response);
+                           if(printers.code===1){
+                               vm.printerlist=printers.data.Printer;
+                           }else{
+                               $.toast("获取打印机列表失败！") ;
+                           }
+                       })
+               },
+               upCompanyNo　: function (){
+                   vm.getWarehouse() ;
+               },
+               getWarehouse : function(){
+                       $.get(vm.getWarehouseURL+'?companyNo='+vm.companyNo,function(response){
+                               console.log(response);
+                               var data = JSON.parse(response);
+                               if(data.code == 1){
+                                   vm.warehouse = data.data.Warehouse;
+                                   vm.getSeries() ;
+                                   vm.getOtype();
+                               }else{
+                                   $.toast("查询仓库失败");
+                               }
+                           })
+               },
+               getSeries: function(){
+                   console.log("getSeries"+vm.companyNo);
+                   //加载系列下拉选项
+                   $.get(vm.getSeriURL,{
+                           companyNo:vm.companyNo
+                       },function(response){
+                           var series = JSON.parse(response);
+                           if(series.code == 1){
+                               vm.createSeri=series.data.Series;
+                           }else {
+                               $.toast("公司不存在");
+                               vm.createSeri = [];
+                           }
+                       });
+               },
+               getOtype: function(){
+                   $.get(vm.getOtypURL,{
+                           ittp : 2,
+                           companyNo : vm.companyNo,
+                       },function(response){
+                           var type = JSON.parse(response);
+                           if(type.code == 1){
+                               vm.createOtyp = type.data.Type;
+                           }else {
+                               $.toast("公司不存在");
+                               vm.createOtyp = [];
+                           }
+                       });
+               },
+               updateUser : function () {
+                   var ser_falg = false;
+                   var ser_falgN = false;
+                   for(var i=0;i<vm.createSeri.length;i++){
+                       $("#up-seri").val()
+                       if(vm.createSeri[i].code==$("#up-seriD").val()){
+                           ser_falg=true;
+                       }
+                       if(vm.createSeri[i].code==$("#up-seriN").val()){
+                           ser_falgN=true;
+                       }
+                   }
+                   if(!ser_falg&&!ser_falgN){
+                       $.toast("请输入正确的系列代码！");
+                       return;
+                   }
+                   var war_falg = false;
+                   var war_falg1 = false;
+                   for(var i=0;i<vm.warehouse.length;i++){
+                       $("#warehouse").val()
+                       if(vm.warehouse[i].code==$("#warehouse").val()){
+                           war_falg=true;
+                       }
+                       if(vm.warehouse[i].code==$("#warehouse1").val()){
+                           war_falg1=true;
+                       }
+                   }
+                   if(!war_falg&&!war_falg1){
+                       $.toast("请输入正确的仓库代码！");
+                       return;
+                   }
+                   $.get(vm.getUpdateUserUrl,{
+                           userid : vm.userid,
+                           username : vm.username,
+                           name : vm.name,
+                           dutyid : $("#duty").val(),
+                           tel : vm.tel,
+                           email : vm.email,
+                           companyNo : vm.companyNo,
+                           warehouseNo : vm.warehouseNo,
+                           warehouseNo1 : vm.warehouseNo1,
+                           seri : $("#up-seriD").val(),
+                           seriN : $("#up-seriN").val(),
+                           otyp : $("#up-otyp").val(),
+                           len : $("#len").val(),
+                           defaultprinter :$("#defaultprinter").val(),
+                       },function (response) {
+                           var upadte =JSON.parse(response);
+                           if(upadte.code===1){
+                               $.toast(vm.success_len)
+                               vm.pageNo = 1;
+                               $.router.load("#user-setting-page");
+                               vm.userlist=[];
+                               vm.userList();
+                           }else{
+                               $.toast(vm.error_len)
+                           }
+                       })
+               },
+               deleteUser : function () {
+                   $.get(vm.getUpdateUserUrl,{
+                           userid : vm.userid,
+                           status : 0
+                       },function (response) {
+                       var upadte =JSON.parse(response);
+                       if(upadte.code===1){
+                           $.toast(vm.success_len)
+                           vm.pageNo = 1;
+                           $.router.load("#user-setting-page");
+                           vm.userlist=[];
+                           vm.userList();
+                       }else{
+                           $.toast(vm.error_len)
+                       }
+                   })
+               },
+               resetPassword : function () {
+                   $.get(vm.getUpdateUserUrl,{
+                           userid : vm.userid,
+                           password : '123456'
+                       },function (response) {
+                       var upadte =JSON.parse(response);
+                       if(upadte.code===1){
+                           $.toast(vm.success_len+"！"+vm.initial_password_len+"123456")
+                       }else{
+                           $.toast(vm.error_len)
+                       }
+                   })
+               },
+               newUser : function () {
+                   vm.userid ='';
+                   vm.username = '';
+                   vm.name = '';
+                   vm.dutyid = '';
+                   vm.dutyname = '';
+                   vm.tel = '';
+                   vm.email = '';
+                   vm.companyNo = '';
+                   vm.warehouseNo = '';
+                   vm.warehouseNo1 = '';
+                   vm.len = 'G';
+                   vm.defaultprinter = '';
+                   vm.seriD="";
+                   vm.seriN="";
+                   vm.otyp="";
+                   vm.warehouse ={};
+                   vm.createSeri={};
+                   vm.createOtyp = {};
+                   vm.getPrinterList();
+                   vm.getDutyList();
+                   $.router.load("#create-user-page");
+               },
+               saveUser : function () {
+                   var ser_falg = false;
+                   var ser_falgN = false;
+                   for(var i=0;i<vm.createSeri.length;i++){
+                       $("#new-seriD").val()
+                       $("#new-seriN").val()
+                       if(vm.createSeri[i].code==$("#new-seriD").val()){
+                            ser_falg=true;
+                       }
+                       if(vm.createSeri[i].code==$("#new-seriN").val()){
+                            ser_falgN=true;
+                       }
+                   }
+                   if(!ser_falg||!ser_falgN){
+                       $.toast(vm.in_succ_seri_len);
+                       return;
+                   }
+                   var war_falg = false;
+                   var war_falg1 = false;
+                   for(var i=0;i<vm.warehouse.length;i++){
+                       $("#newwarehouse").val()
+                       if(vm.warehouse[i].code==$("#newwarehouse").val()){
+                           war_falg=true;
+                       }
+                       if(vm.warehouse[i].code==$("#newwarehouse1").val()){
+                           war_falg1=true;
+                       }
+                   }
+                   if(!war_falg&&!war_falg1){
+                       $.toast("请输入正确的仓库代码！");
+                       return;
+                   }
+                   $.get(vm.getNewUserUrl,{
+                           username : vm.username,
+                           password : '123456',
+                           name : vm.name,
+                           dutyid : $("#newduty").val(),
+                           tel : vm.tel,
+                           email : vm.email,
+                           companyNo : vm.companyNo,
+                           warehouseNo : vm.warehouseNo,
+                           warehouseNo1 : vm.warehouseNo1,
+                           seri : $("#new-seriD").val(),
+                           seriN : $("#new-seriN").val(),
+                           otyp : $("#new-otyp").val(),
+                           len : $("#newlen").val(),
+                           defaultprinter :$("#newdefaultprinter").val(),
+                           status : '1',
+                       },function (response) {
+                       var upadte =JSON.parse(response);
+                       if(upadte.code===1){
+                           $.toast(vm.success_len+"！"+vm.initial_password_len+"123456")
+                           vm.pageNo = 1;
+                           $.router.load("#user-setting-page");
+                           vm.userlist=[];
+                           vm.userList();
+                       }else{
+                           $.toast(vm.error_len)
+                       }
+                   })
+               },
+               exit:function () {
+                   localStorage.clear();
+                   window.location.href="login.html";
+               },
+           }
+        });
+        vm.userJudge();
+        function goBack(){
+            vm.pageNo = 1;
+            if(window.location.hash=="#user-setting-page"||window.location.hash=="#job-setting-page"){
+                window.location.href="authority.html";
+            }else if(window.location.hash=="#authority-detail-page"||window.location.hash=="#create-user-page"){
+                $.router.load("#user-setting-page");
+            }else if(window.location.hash=="#update-job-page"||window.location.hash=="#create-job-page") {
+                    $.router.load("#job-setting-page");
+            }else {
+                window.location.href="index.html";
+            }
+        }
+    </script>
+
+</body>
+</html>

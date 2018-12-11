@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.orclmapper.BatchMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="t$clot" property="code" jdbcType="VARCHAR" />
+		<id column="t$idat" property="dsca" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t$clot, t$ldat
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		baan.twhltc105${companyNo}.t$clot, baan.twhltc105${companyNo}.t$ldat
+		from baan.twhltc105${companyNo}
+		left join baan.twhinr140${companyNo} on
+		baan.twhinr140${companyNo}.t$clot=baan.twhltc105${companyNo}.t$clot
+		AND
+		baan.twhinr140${companyNo}.t$cwar=baan.twhltc105${companyNo}.t$cwar
+		AND
+		baan.twhinr140${companyNo}.t$item=baan.twhltc105${companyNo}.t$item
+		<where>
+			<if test="if1 != null and if1 != ''">
+				and baan.twhltc105${companyNo}.t$cwar = #{if1,jdbcType=VARCHAR}
+			</if>
+			<if test="if2 != null and if2 != ''">
+				and baan.twhinr140${companyNo}.t$loca = #{if2,jdbcType=VARCHAR}
+			</if>
+			<if test="if3 != null and if3 != ''">
+				and baan.twhltc105${companyNo}.t$item = #{if3,jdbcType=VARCHAR}
+			</if>
+			and baan.twhinr140${companyNo}.t$qhnd - (select NVL(sum(T$qoor),0)
+			from baan.twhinr930${companyNo} b where b.t$stat in (0,2) and
+			b.T$item = baan.twhinr140${companyNo}.t$item and b.t$clot=
+			baan.twhinr140${companyNo}.t$clot and b.t$sfco=
+			baan.twhinr140${companyNo}.t$cwar and b.t$sflo=
+			baan.twhinr140${companyNo}.t$loca )>0
+		</where>
+		ORDER BY baan.twhinr140${companyNo}.t$idat
+	</select>
+</mapper>

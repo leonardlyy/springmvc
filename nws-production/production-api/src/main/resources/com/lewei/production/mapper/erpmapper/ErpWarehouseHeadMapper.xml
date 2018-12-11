@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.erpmapper.ErpWarehouseHeadMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.ErpWarehouseHead">
+		<id column="t_oorg" property="oorg" jdbcType="VARCHAR" />
+		<id column="t_orno" property="orno" jdbcType="VARCHAR" />
+		<id column="t_oset" property="oset" jdbcType="INTEGER" />
+		<result column="t_ittp" property="ittp" jdbcType="VARCHAR" />
+		<result column="t_otyp" property="otyp" jdbcType="VARCHAR" />
+		<result column="t_seri" property="seri" jdbcType="VARCHAR" />
+		<result column="t_sfco" property="sfco" jdbcType="VARCHAR" />
+		<result column="t_sflo" property="sflo" jdbcType="VARCHAR" />
+		<result column="t_stco" property="stco" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t_orno,t_oset,t_oorg,t_ittp,t_otyp,t_seri,t_sfco,t_sflo,t_stco
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		<include refid="Base_Column_List" />
+		from twhinh200${companyNo}
+		<where>
+			and t_ittp = 2
+			and t_oorg = 51
+			<if test="if1 != null and if1 != ''">
+				and t_orno = #{if1,jdbcType=VARCHAR}
+			</if>
+			<if test="in1 != null and in1 != ''">
+				and t_oset = #{in1,jdbcType=INTEGER}
+			</if>
+			order by t_odat DESC
+		</where>
+	</select>
+
+	<select id="selectAllPage" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.util.Pagination">
+		select t_orno,t_oset FROM twhinh200${params.companyNo}
+		<where>
+			and t_ittp = 2
+			and t_oorg = 51
+			<if test="params.orno != null and params.orno != ''">
+				and t_orno LIKE CONCAT(CONCAT('%', #{params.orno,jdbcType=VARCHAR}),
+				'%')
+			</if>
+		</where>
+		order by t_odat DESC
+	</select>
+</mapper>

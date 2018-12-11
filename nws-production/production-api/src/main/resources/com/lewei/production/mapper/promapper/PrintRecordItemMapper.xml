@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.promapper.PrintRecordItemMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.PrintRecordItem">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="cwar" property="cwar" jdbcType="VARCHAR" />
+		<result column="item" property="item" jdbcType="VARCHAR" />
+		<result column="userid" property="userid" jdbcType="INTEGER" />
+		<result column="create_date" property="createDate"
+			jdbcType="TIMESTAMP" />
+		<result column="modify_date" property="modifyDate"
+			jdbcType="TIMESTAMP" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, code,cwar, item, userid, create_date, modify_date
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from print_record_item
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey"
+		parameterType="java.lang.Integer">
+		delete from print_record_item
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insertSelective"
+		parameterType="com.lewei.production.model.PrintRecordItem">
+		insert into print_record_item(code, cwar, item, userid)
+		values (#{code,jdbcType=VARCHAR},#{cwar,jdbcType=VARCHAR},
+		#{item,jdbcType=VARCHAR}, #{userid,jdbcType=INTEGER})
+	</insert>
+
+</mapper>

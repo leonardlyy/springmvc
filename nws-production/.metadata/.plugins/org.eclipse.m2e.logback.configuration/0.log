@@ -1,0 +1,42 @@
+2018-11-28 14:29:38,057 [Worker-6: Updating Maven Dependencies] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.maven.ide.eclipse.wtp.WarLifecycleMapping lifecycle mapping for MavenProject: com.lewei:production-api:2.0.171210 @ D:\nws-production\production-api\pom.xml.
+2018-11-28 14:29:38,537 [Worker-6: Updating Maven Dependencies] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for com.lewei:production-wsdl:jar:2.0.171210 is missing, no dependency information available
+2018-11-28 14:29:40,253 [Worker-6: Updating Maven Dependencies] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for com.lewei:production-wsdl:jar:2.0.171210 is missing, no dependency information available
+2018-11-28 14:29:44,692 [Worker-3: Building workspace] WARN  o.e.m.c.i.embedder.EclipseLogger - The POM for com.lewei:production-wsdl:jar:2.0.171210 is missing, no dependency information available
+2018-11-28 14:29:45,112 [Worker-3: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-11-28 14:29:45,122 [Worker-3: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 43 resources
+2018-11-28 14:29:45,132 [Worker-3: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-11-28 14:29:45,132 [Worker-3: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-api\src\test\resources
+2018-11-28 14:29:50,442 [Worker-3: Building workspace] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.eclipse.m2e.jdt.JarLifecycleMapping lifecycle mapping for MavenProject: com.lewei:production-wsdl:2.0.171210 @ D:\nws-production\production-wsdl\pom.xml.
+2018-11-28 14:29:50,732 [Worker-3: Building workspace] INFO  o.e.m.c.i.l.LifecycleMappingFactory - Using org.maven.ide.eclipse.wtp.WarLifecycleMapping lifecycle mapping for MavenProject: com.lewei:production-api:2.0.171210 @ D:\nws-production\production-api\pom.xml.
+2018-11-28 14:29:50,792 [Worker-3: Building workspace] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/production-wsdl: com.lewei:production-wsdl:2.0.171210 with classifier  to /production-wsdl/target/classes
+2018-11-28 14:29:51,422 [Worker-3: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-11-28 14:29:51,422 [Worker-3: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-wsdl\src\main\resources
+2018-11-28 14:29:51,422 [Worker-3: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-11-28 14:29:51,422 [Worker-3: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-wsdl\src\test\resources
+2018-11-28 15:38:11,221 [Worker-11: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-11-28 15:38:11,226 [Worker-11: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-wsdl\src\main\resources
+2018-11-28 15:38:11,228 [Worker-11: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-11-28 15:38:11,228 [Worker-11: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-wsdl\src\test\resources
+2018-11-28 15:38:13,996 [Worker-11: Building workspace] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/production-wsdl: com.lewei:production-wsdl:2.0.171210 with classifier  to /production-wsdl/target/classes
+2018-11-28 15:38:14,034 [Worker-11: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-11-28 15:38:14,039 [Worker-11: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 43 resources
+2018-11-28 15:38:14,450 [Worker-11: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-11-28 15:38:14,450 [Worker-11: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-api\src\test\resources
+2018-12-05 16:03:23,749 [Worker-2: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-12-05 16:03:23,759 [Worker-2: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-wsdl\src\main\resources
+2018-12-05 16:03:23,759 [Worker-2: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-12-05 16:03:23,759 [Worker-2: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-wsdl\src\test\resources
+2018-12-05 16:03:25,309 [Worker-2: Building workspace] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/production-wsdl: com.lewei:production-wsdl:2.0.171210 with classifier  to /production-wsdl/target/classes
+2018-12-05 16:03:25,369 [Worker-2: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-12-05 16:03:25,369 [Worker-2: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 43 resources
+2018-12-05 16:03:25,792 [Worker-2: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-12-05 16:03:25,792 [Worker-2: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-api\src\test\resources
+2018-12-06 09:24:42,079 [Worker-7: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-12-06 09:24:42,085 [Worker-7: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-wsdl\src\main\resources
+2018-12-06 09:24:42,088 [Worker-7: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-12-06 09:24:42,088 [Worker-7: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-wsdl\src\test\resources
+2018-12-06 09:24:44,125 [Worker-4: Building workspace] INFO  o.e.m.c.i.p.WorkspaceClassifierResolverManager - Resolving P/production-wsdl: com.lewei:production-wsdl:2.0.171210 with classifier  to /production-wsdl/target/classes
+2018-12-06 09:24:44,169 [Worker-4: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-12-06 09:24:44,175 [Worker-4: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 43 resources
+2018-12-06 09:24:44,590 [Worker-4: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - Using 'UTF-8' encoding to copy filtered resources.
+2018-12-06 09:24:44,590 [Worker-4: Building workspace] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\nws-production\production-api\src\test\resources

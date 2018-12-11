@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.orclmapper.ItemMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="t$item" property="code" jdbcType="VARCHAR" />
+		<result column="t$seak" property="dsca" jdbcType="VARCHAR" />
+		<result column="t$grid" property="grid" jdbcType="VARCHAR" />
+
+	</resultMap>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		baan.twhwmd210${companyNo}.t$item,baan.twhwmd400${companyNo}.t$seak
+		from baan.twhwmd210${companyNo}
+		LEFT JOIN baan.twhwmd400${companyNo}
+		on baan.twhwmd210${companyNo}.t$item=baan.twhwmd400${companyNo}.t$item
+		where baan.twhwmd210${companyNo}.t$cwar = #{if1,jdbcType=VARCHAR}
+		ORDER BY baan.twhwmd210${companyNo}.t$item
+	</select>
+
+	<select id="selectPrint" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		baan.twhwmd210${companyNo}.t$item,baan.twhwmd400${companyNo}.t$seak
+		from baan.twhwmd210${companyNo}
+		LEFT JOIN baan.twhwmd400${companyNo}
+		on baan.twhwmd210${companyNo}.t$item=baan.twhwmd400${companyNo}.t$item
+		LEFT JOIN (
+		SELECT t$cwar,t$item,COUNT(t$clot) num FROM baan.twhinr140${companyNo}
+		GROUP BY t$cwar,t$item
+		) t
+		ON baan.twhwmd210${companyNo}.t$cwar=t.t$cwar
+		AND baan.twhwmd210${companyNo}.t$item=t.t$item
+		where baan.twhwmd210${companyNo}.t$cwar = #{if1,jdbcType=VARCHAR}
+		AND t.num > 0
+		ORDER BY baan.twhwmd210${companyNo}.t$item
+	</select>
+
+	<select id="selectDsca" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		select
+		baan.twhwmd210${companyNo}.t$item,baan.ttcibd001${companyNo}.t$dsca as
+		t$seak,baan.ttcibd001${companyNo}.t$ltct as t$grid
+		from baan.twhwmd210${companyNo}
+		LEFT JOIN baan.ttcibd001${companyNo}
+		on baan.twhwmd210${companyNo}.t$item=baan.ttcibd001${companyNo}.t$item
+		<where>
+			<if test="if1 != null and if1 != ''">
+				and baan.twhwmd210${companyNo}.t$cwar = #{if1,jdbcType=VARCHAR}
+			</if>
+			<if test="if2 != null and if2 != ''">
+				and baan.twhwmd210${companyNo}.t$item = #{if2,jdbcType=VARCHAR}
+			</if>
+		</where>
+	</select>
+
+</mapper>

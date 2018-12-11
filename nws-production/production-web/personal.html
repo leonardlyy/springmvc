@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>条码扫描系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/sm.min.css">
+    <style>
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .bar button{
+            border:0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+        .bar button img{
+            max-height: 100%;
+        }
+        .bar .icon img{
+            max-height: 10%;
+            max-width: 10%;
+        }
+        .content-padded .searchbar .icon img{
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+        .bar-header-secondary~.content{
+            top: 3rem;
+        }
+        .content-item{
+            /*height: 33%;*/
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+        .item{
+            width:25%;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align:center;
+            vertical-align:middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .item-label{
+            display:block;
+            font-size:.65rem;
+            position:relative;
+            top:.15rem;
+        }
+    </style>
+</head>
+<body>
+<div class="page-group" id="personal-page">
+    <div class="page page-current" id="index-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{personal_center_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="content-item">
+                <a class="item" href="#basic-setting-page">
+                    <span class="item-icon"><img src="img/yuyan.png"></span>
+                    <span class="item-label">{{language_settings_len}}</span>
+                </a>
+                <a class="item" href="#pwd-change-page">
+                    <span class="item-icon"><img src="img/mima.jpg"></span>
+                    <span class="item-label">{{password_modification_len}}</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!--基本设置页面-->
+    <div class="page" id="basic-setting-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{language_settings_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-gender"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">{{language_settings_len}}</div>
+                                <div class="item-input" >
+                                    <select id="len" @change="updateLen()">
+                                        <option value="G">中文</option>
+                                        <option v-if="len==='E'"  value="E" selected="selected">English</option>
+                                        <option v-if="len!='E'"  value="E" >English</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!--<div class="content-block">-->
+                <!--<div class="col-100"><a href="#" class="button button-big button-fill button-success">{{submit_len}}</a></div>-->
+            <!--</div>-->
+        </div>
+    </div>
+
+    <!--修改密码页面-->
+    <div class="page" id="pwd-change-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{password_modification_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{old_password_len}}</div>
+                                <div class="item-input">
+                                    <input type="password" id="old_password" >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                 </ul>
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{new_password_len}}</div>
+                                <div class="item-input">
+                                    <input type="password" id="new_password" >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-inner">
+                                <div class="item-title label">{{confirm_password_len}}</div>
+                                <div class="item-input">
+                                    <input type="password" id="confirm_password" >
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-block">
+                <div class="row">
+                    <div class="col-100" @click="updatePassword()"><a href="#" class="button button-big button-fill button-success">{{submit_len}}</a></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>-->
+<!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>-->
+<script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+<script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/vue-resource.min.js"></script>
+<script src="js/constant.js"></script>
+<script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+<!--<script type="text/javascript" src="js/vue-resource.min.js" charset="utf-8"></script>-->
+<script>
+    $.init();
+    function goBack(){
+        window.location.href="index.html";
+    }
+    var httpURL = httpUrl;
+ //   var httpURL ="http://localhost:8080/production/";
+    var user=localStorage.getItem('user');
+    var userData=JSON.parse(user);
+    var vm = new Vue({
+        el : '#personal-page',
+        data : {
+            personal_center_len : '个人中心',
+            language_settings_len : '语言设置',
+            password_modification_len : '密码修改',
+            old_password_len : '旧密码',
+            new_password_len : '新密码',
+            confirm_password_len : '确认密码',
+            submit_len : '提交',
+            len : "G",
+            updating_len : "正在更新",
+            system_exception : "系统异常",
+            new_pass_is_null_len : "新密码不能为空!",
+            success_len : "成功!",
+            new_pass_diff_len : "两次密码输入不一致!",
+            old_pass_error : "原密码输入错误!",
+            getUpdateLenUrl : httpURL + "user/updateuser",
+            getUserUrl : httpURL + "user/login",
+            
+        },
+        methods : {
+            userJudge:function () {
+                var user=localStorage.getItem('user');
+                if(user==null){
+                    window.location.href="login.html";
+                }
+                var userData=JSON.parse(user);
+                if(userData.data.user.len=='E'){
+                    vm.personal_center_len = 'Personal Center';
+                    vm.language_settings_len = 'Language Settings';
+                    vm.password_modification_len = 'Password Modification';
+                    vm.submit_len = 'Submit';
+                    vm.old_password_len = 'Old Password';
+                    vm.new_password_len = 'New Password';
+                    vm.confirm_password_len = 'confirm Password';
+                    vm.len ="E";
+                    vm.updating_len ="Updating";
+                    vm.system_exception ="System Exception";
+                    vm.new_pass_is_null_len ="New password can not be empty!";
+                    vm.success_len ="Success!";
+                    vm.new_pass_diff_len ="New cipher inconsistencies";
+                    vm.old_pass_error ="Old password is error";
+                }else{
+                    vm.personal_center_len = '个人中心';
+                        vm.language_settings_len = '语言设置';
+                        vm.password_modification_len = '密码修改';
+                        vm.old_password_len = '旧密码';
+                        vm.new_password_len = '新密码';
+                        vm.confirm_password_len = '确认密码';
+                        vm.submit_len = '提交';
+                        vm.len = "G";
+                        vm.updating_len = "正在更新";
+                        vm.system_exception = "系统异常";
+                        vm.new_pass_is_null_len = "新密码不能为空!";
+                        vm.new_pass_diff_len = "两次密码输入不一致!";
+                        vm.old_pass_error = "原密码输入错误!";
+                        vm.success_len = "成功!";
+                }
+            },
+            updateLen : function () {
+                $.showPreloader(vm.updating_len+'...');
+                $.get(vm.getUpdateLenUrl,{
+                        userid : userData.data.user.id,
+                        len : $("#len").val()
+                    },function (response) {
+                    console.log(response)
+                    var data =JSON.parse(response);
+                    if(data.code==1) {
+                        $.get(vm.getUserUrl,{
+                                username : userData.data.user.username,
+                                password : userData.data.user.password
+                            },function (res) {
+                            console.log(res)
+                            $.hidePreloader();
+                            var data1 =JSON.parse(res);
+                            if(data1.code==1) {
+                                localStorage.clear();
+                                localStorage.setItem('user',res);
+                                vm.userJudge();
+                            }else{
+                                $.alert(vm.system_exception);
+                                $.hidePreloader();
+                            }
+                         })
+                    }
+
+                })
+
+            },
+            updatePassword : function () {
+                var old= $("#old_password").val();
+                var newp= $("#new_password").val();
+                var conp= $("#confirm_password").val();
+                if(newp==""){
+                    $.toast(vm.new_pass_is_null_len);
+                    return;
+                }
+                if(old==userData.data.user.password){
+                    if(newp==conp){
+                        $.showPreloader(vm.updating_len + '...');
+                        $.get(vm.getUpdateLenUrl,{
+                                userid : userData.data.user.id,
+                                password :newp,
+                            },function (response) {
+                            $.hidePreloader();
+                            var data = JSON.parse(response);
+                            if (data.code == 1) {
+                                $.alert(vm.success_len);
+                                localStorage.clear();
+                                window.location.href="login.html";
+                            }else{
+                                $.toast(vm.system_exception)
+                            }
+                        })
+                    }else{
+                        $.toast(vm.new_pass_diff_len)
+                    }
+                }else{
+                    $.toast(vm.old_pass_error)
+                }
+            },
+            exit:function () {
+                localStorage.clear();
+                window.location.href="login.html";
+            },
+        }
+    });
+    vm.userJudge();
+</script>
+</body>
+</html>

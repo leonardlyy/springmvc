@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>条码扫描系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="css/sm.min.css">
+    <style>
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .bar button{
+            border:0;
+            border-color: transparent;
+            color: #3d4145;
+            font-size: .65rem;
+        }
+        .bar button img{
+            max-height: 100%;
+        }
+        .bar .icon img{
+            max-height: 10%;
+            max-width: 10%;
+        }
+        .content-padded .searchbar .icon img{
+            max-width: 50%;
+            margin-top: .25rem;
+        }
+        .bar-header-secondary~.content{
+            top: 3rem;
+        }
+        .content-item{
+            /*height: 33%;*/
+            display: flex;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            margin: .5rem .75rem;
+        }
+        .item{
+            width:25%;
+            /*height:2.5rem;*/
+            /*color:#929292;*/
+            text-align:center;
+            vertical-align:middle;
+            text-decoration: none;
+            /*margin: .75rem .35rem;*/
+        }
+        .item-icon{
+            top:.05rem;
+            height:1.2rem;
+            font-size:1.2rem;
+            line-height:1.2rem;
+            padding-top:0;
+            padding-bottom:0;
+        }
+        .item-icon img{
+            max-width: 50px;
+            max-height: 50px;
+        }
+        .item-label{
+            display:block;
+            font-size:.65rem;
+            position:relative;
+            top:.15rem;
+        }
+    </style>
+</head>
+<body>
+<div class="page-group" id="system-page">
+    <div class="page page-current" id="index-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{system_setting_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="content-item">
+                <a class="item" href="#basic-setting-page">
+                    <span class="item-icon"><img src="img/jibenshezhi.png"></span>
+                    <span class="item-label">{{basic_setting_len}}</span>
+                </a>
+                <a class="item" href="#update-data-page">
+                    <span class="item-icon"><img src="img/cuowurizhi.png"></span>
+                    <span class="item-label">{{update_data_len}}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!--基本设置页面-->
+    <div class="page" id="basic-setting-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{basic_setting_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="list-block">
+                <ul>
+                    <li>
+                        <div class="item-content">
+                            <div class="item-media"><i class="icon icon-form-toggle"></i></div>
+                            <div class="item-inner">
+                                <div class="item-title label">{{sync_len}}/{{async_len}}</div>
+                                <div class="item-input">
+                                    <label class="label-switch">
+                                        <input type="checkbox" id="asynbox" value="asyn">
+                                        <div class="checkbox"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="content-block">
+                <div class="col-100" @click="asynSet()"><a href="#" class="button button-big button-fill button-success">{{submit_len}}</a></div>
+            </div>
+        </div>
+    </div>
+    <!--基本设置页面-->
+    <div class="page" id="update-data-page">
+        <header class="bar bar-nav">
+            <button class="button pull-left" onclick="goBack()">
+                <img src="img/back.png">
+            </button>
+            <button class="button pull-right confirm-ok-cancel" @click="exit()">
+                <img src="img/exit-black.png">
+            </button>
+            <h1 class="title">{{update_data_len}}</h1>
+        </header>
+        <div class="content">
+            <div class="content-item">
+                <a class="item" @click="updateData()">
+                    <span class="item-icon"><img src="img/cuowurizhi.png"></span>
+                    <span class="item-label">{{start_sync_len}}</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+</div>
+
+<!--<script type='text/javascript' src='//g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>-->
+<!--<script type='text/javascript' src='//g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>-->
+<script type='text/javascript' src='js/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='js/sm.min.js' charset='utf-8'></script>
+<script type="text/javascript" src="js/vue.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/vue-resource.min.js"></script>
+
+<script type="text/javascript" src="js/vue-infinite-loading.js"></script>
+<script type="text/javascript" src="js/lodash.min.js"></script>
+<script src="js/constant.js"></script>
+<script type="text/javascript" src="js/user-online.js" charset="utf-8"></script>
+<!--<script type="text/javascript" src="js/vue-resource.min.js" charset="utf-8"></script>-->
+<script>
+    $.init();
+
+    var httpURL=httpUrl + "entering";
+    //   var httpURL ="http://localhost:8080/production/entering";
+//    var httpURL ="http://localhost:8989/entering";
+    var user=localStorage.getItem('user');
+    var userData=JSON.parse(user);
+    var vm =new Vue({
+        el: '#system-page',
+        data :{
+            system_setting_len : '离线设置',
+            basic_setting_len : '离线状态',
+            update_data_len : "同步数据",
+            sync_len : "同步",
+            async_len : "异步",
+            submit_len : "提交",
+            start_sync_len : "开始同步",
+            opened_async_len : "已开启离线模式",
+            closed_async_len : "已关闭离线模式",
+            synchronizing_len : "正在同步",
+            system_exception : "系统异常",
+            getCreateAllInfo : httpURL + "/createall",
+        },
+        methods :{
+            userJudge:function () {
+                if(userData!=null) {
+                    if (userData.data.user.len == 'E') {
+                        vm.system_setting_len = 'System Setting';
+                        vm.basic_setting_len = 'Basic Setting';
+                        vm.history_log_len = "History Log";
+                        vm.Issue_Head='Issue_Head';
+                        vm.Issue_Line='Issue_Line';
+                        vm.sync_len='Sync';
+                        vm.async_len='Async';
+                        vm.start_sync_len='Start sync';
+                        vm.opened_async_len='Async mode has been opened';
+                        vm.closed_async_len='Async mode has been closed';
+                        vm.synchronizing_len='Synchronizing';
+                        vm.system_exception='System exception';
+                        vm.submit_len = "Submit";
+                        vm.update_data_len = "Update data";
+                    }
+                }
+                if(localStorage.getItem("asyn")!=null){
+                    var chk = document.getElementById('asynbox');
+                    chk.checked =true;
+                }
+            },
+            asynSet : function () {
+                var chk = document.getElementById('asynbox');
+                if(chk.checked){
+                    localStorage.setItem("asyn","asyn");
+                    $.toast(vm.opened_async_len)
+                }else{
+                    localStorage.removeItem("asyn");
+                    $.toast(vm.closed_async_len)
+                }
+            },
+            updateData : function () {
+                console.log("start update")
+                if(localStorage.getItem("head-line")!=null){
+                    $.showPreloader(vm.synchronizing_len + '...');
+                    var headLine=localStorage.getItem("head-line");
+                   $.get(vm.getCreateAllInfo,{
+                       headLine :headLine,
+                       },function (response) {
+                       console.log(response)
+                       var info = JSON.parse(response);
+                       if(info.code==1){
+                           if (userData.data.user.len == 'E') {
+                               $.alert(info.data.linenum +" lines of success, the total number of "+info.data.linecount+" lines");
+                           }else{
+                               $.alert("成功录入"+info.data.linenum+"条，共"+info.data.linecount+"条!");
+                           }
+                           $.hidePreloader();
+                           localStorage.removeItem("heads");
+                           localStorage.removeItem("lines");
+                       }else{
+                           $.alert(vm.system_exception);
+                           $.hidePreloader();
+                       }
+                   },function (res) {
+                       $.alert(vm.system_exception);
+                       $.hidePreloader();
+                   })
+
+                }
+            },
+            exit:function () {
+                localStorage.clear();
+                window.location.href="login.html";
+            },
+        }
+    })
+    vm.userJudge();
+
+    function goBack(){
+        if(window.location.hash=="#log-page-line"||window.location.hash=="#log-page-head"){
+            console.log(window.location.hash)
+            $.router.load("#log-page");
+        }else if(window.location.hash=="#log-page"){
+            window.location.href="system.html";
+        }else{
+            window.location.href="index.html";
+        }
+
+    }
+
+
+
+</script>
+</body>
+</html>

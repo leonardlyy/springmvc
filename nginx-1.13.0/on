@@ -1,0 +1,8 @@
+127.0.0.1 - - [11/May/2017:16:18:34 +0800] "GET /NginxStatus HTTP/1.1" 401 597 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2970.0 Safari/537.36"
+127.0.0.1 - root [11/May/2017:16:18:41 +0800] "GET /NginxStatus HTTP/1.1" 500 595 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2970.0 Safari/537.36"
+127.0.0.1 - root [11/May/2017:16:18:55 +0800] "GET /NginxStatus HTTP/1.1" 500 595 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2970.0 Safari/537.36"
+127.0.0.1 - root [11/May/2017:16:19:04 +0800] "GET /NginxStatus HTTP/1.1" 500 595 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2970.0 Safari/537.36"
+127.0.0.1 - root [11/May/2017:16:19:05 +0800] "GET /NginxStatus HTTP/1.1" 500 595 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2970.0 Safari/537.36"
+127.0.0.1 - root [11/May/2017:16:19:07 +0800] "GET /NginxStatus HTTP/1.1" 500 595 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2970.0 Safari/537.36"
+127.0.0.1 - root [11/May/2017:16:19:11 +0800] "GET /NginxStatus HTTP/1.1" 500 595 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2970.0 Safari/537.36"
+127.0.0.1 - root [11/May/2017:16:24:00 +0800] "GET /NginxStatus HTTP/1.1" 200 101 "-" "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2970.0 Safari/537.36"

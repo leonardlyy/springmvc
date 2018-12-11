@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper
+	namespace="com.lewei.production.mapper.erpmapper.ErpWarehouseMapper">
+	<resultMap id="BaseResultMap"
+		type="com.lewei.production.model.Other">
+		<id column="t_cwar" property="code" jdbcType="VARCHAR" />
+		<result column="t_dsca" property="dsca" jdbcType="VARCHAR" />
+		<result column="t$grid" property="grid" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		t_cwar, t_dsca,t$grid
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		SELECT ttcmcs003${companyNo}.t_cwar,ttcmcs003${companyNo}.t_dsca FROM
+		ttcmcs003${companyNo}
+		LEFT JOIN ttcemm112${companyNo} ON ttcemm112${companyNo}.t_waid =
+		ttcmcs003${companyNo}.t_cwar
+		<!--<where> -->
+		<!--<if test="if1 != null"> -->
+		<!--AND ttcemm112${companyNo}.t_grid = #{if1,jdbcType=VARCHAR} -->
+		<!--</if> -->
+		<!--</where> -->
+	</select>
+	<select id="selectDefault" resultMap="BaseResultMap"
+		parameterType="com.lewei.production.model.Condition">
+		SELECT DISTINCT t.t_cwar,ttcmcs003${companyNo}.t_dsca from (
+		SELECT * FROM twhinr140${companyNo}
+		<where>
+			<if test="if2 != null">
+				AND t_item = #{if2,jdbcType=VARCHAR}
+			</if>
+			AND t_qhnd> 0
+		</where>
+		) t
+		LEFT JOIN ttcmcs003${companyNo} ON t.t_cwar = ttcmcs003${companyNo}.t_cwar
+		LEFT JOIN ttcemm112${companyNo} ON ttcemm112${companyNo}.t_waid =
+		ttcmcs003${companyNo}.t_cwar
+		<!--<where> -->
+		<!--<if test="if1 != null"> -->
+		<!--AND ttcemm112${companyNo}.t_grid = #{if1,jdbcType=VARCHAR} -->
+		<!--</if> -->
+		<!--</where> -->
+	</select>
+</mapper>

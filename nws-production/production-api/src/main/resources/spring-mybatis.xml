@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                          http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+                          http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd">
+
+	<!--本例spring集成mybatis，使用注解的方式映射Mapper接口，开启事务注解，使用c3p0连接池 -->
+	<context:property-placeholder
+		location="classpath*:*.properties" />
+
+	<!-- 激活spring注解 -->
+	<context:annotation-config />
+	<!-- 自动扫描组件 -->
+	<context:component-scan
+		base-package="com.lewei.production">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- *********************************多数据源**************************************** -->
+	<!--定义一个jdbc数据源，创建一个驱动管理数据源的bean -->
+	<bean id="mysqlDataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass"
+			value="${mysql.jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${mysql.jdbc.url}" />
+		<property name="user" value="${mysql.jdbc.username}" />
+		<property name="password" value="${mysql.jdbc.password}" />
+		<property name="acquireIncrement" value="5" />
+		<property name="initialPoolSize" value="10" />
+		<property name="minPoolSize" value="10" />
+		<property name="maxIdleTime" value="600" />
+		<property name="maxPoolSize" value="100000" />
+		<property name="maxStatements" value="0" />
+	</bean>
+	<bean id="oracleDataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass"
+			value="${oracle.jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${oracle.jdbc.url}" />
+		<property name="user" value="${oracle.jdbc.username}" />
+		<property name="password" value="${oracle.jdbc.password}" />
+		<property name="acquireIncrement" value="5" />
+		<property name="initialPoolSize" value="10" />
+		<property name="minPoolSize" value="10" />
+		<property name="maxIdleTime" value="60" />
+		<property name="maxPoolSize" value="100" />
+	</bean>
+	<bean id="sqlServerDataSource"
+		class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass"
+			value="${sqlServer.jdbc.driverClassName}" />
+		<property name="jdbcUrl" value="${sqlServer.jdbc.url}" />
+		<property name="user" value="${sqlServer.jdbc.username}" />
+		<property name="password" value="${sqlServer.jdbc.password}" />
+		<property name="acquireIncrement" value="5" />
+		<property name="initialPoolSize" value="10" />
+		<property name="minPoolSize" value="10" />
+		<property name="maxIdleTime" value="6000" />
+		<property name="maxPoolSize" value="100000" />
+		<property name="maxStatements" value="0" />
+	</bean>
+
+	<bean id="multipleDataSource"
+		class="com.lewei.production.datasource.MultipleDataSource">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+				<entry key="mysqlDataSource" value-ref="mysqlDataSource" />
+				<entry key="oracleDataSource" value-ref="oracleDataSource" />
+				<entry key="sqlServerDataSource"
+					value-ref="sqlServerDataSource" />
+			</map>
+		</property>
+		<property name="defaultTargetDataSource"
+			ref="mysqlDataSource" />
+	</bean>
+
+	<!--创建一个sql会话工厂bean，指定数据源 -->
+	<bean id="sqlSessionFactory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="multipleDataSource" />
+		<property name="plugins">
+			<array>
+				<bean class="com.lewei.production.web.PageInterceptor">
+					<property name="databaseType" value="sql" />
+				</bean>
+			</array>
+		</property>
+	</bean>
+	<bean id="oracleSqlSessionFactory"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="oracleDataSource" />
+	</bean>
+
+	<!-- 扫描mapper接口文件 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage"
+			value="com.lewei.production.mapper.promapper" />
+		<!-- 指定@MyBatis所在位置 -->
+		<!--注意：1、接口上标注@MyBatis，2、接口名称和映射xml文件名称要相同，且需在同一包中 -->
+		<property name="annotationClass"
+			value="com.lewei.production.annotation.MyBatis" />
+		<property name="sqlSessionFactoryBeanName"
+			value="sqlSessionFactory" />
+	</bean>
+
+	<!-- 扫描mapper接口文件 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage"
+			value="com.lewei.production.mapper.orclmapper" />
+		<!-- 指定@MyBatis所在位置 -->
+		<!--注意：1、接口上标注@MyBatis，2、接口名称和映射xml文件名称要相同，且需在同一包中 -->
+		<property name="annotationClass"
+			value="com.lewei.production.annotation.MyBatis" />
+		<property name="sqlSessionFactoryBeanName"
+			value="oracleSqlSessionFactory" />
+	</bean>
+
+	<!--声明式事务管理 -->
+	<bean id="mTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="oracleDataSource" />
+	</bean>
+	<bean id="oTransactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="multipleDataSource" />
+	</bean>
+	<!--声明支持使用注解管理事务 -->
+	<tx:annotation-driven
+		transaction-manager="mTransactionManager" />
+
+	<!-- 配置事务属性 -->
+	<tx:advice id="mTxAdvice"
+		transaction-manager="mTransactionManager">
+		<tx:attributes>
+			<!--SUPPORTS表示不需要事务支持、REQUIRED表示需要事务支持 -->
+			<tx:method name="*" propagation="SUPPORTS" read-only="true" />
+			<tx:method name="save*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+			<tx:method name="update*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+			<tx:method name="delete*" propagation="REQUIRED"
+				rollback-for="java.lang.Exception" />
+		</tx:attributes>
+	</tx:advice>
+
+
+	<!--配置事务切入点、关联事务属性 -->
+	<aop:config>
+		<aop:pointcut id="methods"
+			expression="execution(* com.lewei.production.service.*.*(..))" />
+		<aop:advisor advice-ref="mTxAdvice" pointcut-ref="methods" />
+	</aop:config>
+	<aop:aspectj-autoproxy />
+	<bean id="dataSourceInterceptor"
+		class="com.lewei.production.datasource.DataSourceInterceptor" />
+	<bean id="springApplication"
+		class="com.lewei.production.web.SpringApplicationContextHolder" />
+	<bean id="initLoader" lazy-init="false"
+		class="com.lewei.production.web.InitLoader" init-method="execute" />
+</beans>
